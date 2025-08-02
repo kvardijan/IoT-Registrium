@@ -63,5 +63,19 @@ namespace device_service.Controllers
             }
             return Ok(ApiResponse<List<Device>>.Ok(devices));
         }
+
+        [Authorize]
+        [HttpPatch("{id}")]
+        public IActionResult UpdateDevice(int id, [FromBody] DeviceUpdateDto deviceUpdateDto)
+        {
+            var updatedDevice = _deviceService.UpdateDevice(id, deviceUpdateDto);
+
+            if (updatedDevice == null)
+            {
+                return NotFound(ApiResponse<object>.Fail("Device not found", 404));
+            }
+
+            return Ok(ApiResponse<Device>.Ok(updatedDevice));
+        }
     }
 }
