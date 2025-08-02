@@ -25,6 +25,11 @@ namespace device_service.Services
             return _context.Devices.FirstOrDefault(d => d.Id == id);
         }
 
+        public Device? GetDeviceBySerialNumber(string serialNumber)
+        {
+            return _context.Devices.FirstOrDefault(d =>d.SerialNumber == serialNumber);
+        }
+
         private Device MapDevice(DeviceRegistrationDto deviceRegistrationDto)
         {
             return new Device

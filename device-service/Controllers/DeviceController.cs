@@ -41,5 +41,16 @@ namespace device_service.Controllers
             }
             return Ok(ApiResponse<Device>.Ok(device));
         }
+
+        [HttpGet("serial/{serial}")]
+        public IActionResult GetDeviceBySerialNumber(string serial)
+        {
+            var device = _deviceService.GetDeviceBySerialNumber(serial);
+            if (device == null)
+            {
+                return NotFound(ApiResponse<object>.Fail("Device not found", 404));
+            }
+            return Ok(ApiResponse<Device>.Ok(device));
+        }
     }
 }
