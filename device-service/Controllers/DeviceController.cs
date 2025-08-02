@@ -52,5 +52,16 @@ namespace device_service.Controllers
             }
             return Ok(ApiResponse<Device>.Ok(device));
         }
+
+        [HttpGet]
+        public IActionResult GetDevices()
+        {
+            var devices = _deviceService.GetDevices();
+            if (devices == null)
+            {
+                return NotFound(ApiResponse<object>.Fail("No devices found", 404));
+            }
+            return Ok(ApiResponse<List<Device>>.Ok(devices));
+        }
     }
 }

@@ -30,6 +30,11 @@ namespace device_service.Services
             return _context.Devices.FirstOrDefault(d =>d.SerialNumber == serialNumber);
         }
 
+        public List<Device> GetDevices()
+        {
+            return _context.Devices.ToList();
+        }
+
         private Device MapDevice(DeviceRegistrationDto deviceRegistrationDto)
         {
             return new Device
