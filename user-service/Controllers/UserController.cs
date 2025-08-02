@@ -23,11 +23,11 @@ namespace user_service.Controllers
             var user = _userService.Authenticate(request.Username, request.Password);
 
             if (user == null)
-                return Unauthorized("Invalid credentials");
+                return Unauthorized(ApiResponse<object>.Fail("Invalid credentials.", 401));
 
             var token = _tokenService.CreateToken(user);
 
-            return Ok(new { Message = "Login successful", Token = token });
+            return Ok(ApiResponse<object>.Ok(token));
         }
     }
 }
