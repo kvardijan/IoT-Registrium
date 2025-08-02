@@ -23,6 +23,10 @@ namespace user_service.Services
                 {
                     return user;
                 }
+                else
+                {
+                    return null;
+                }
             }
             //workaround for admin user
 

@@ -24,7 +24,7 @@ namespace user_service
                 c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
                 {
                     Description = @"JWT Authorization header using the Bearer scheme.  
-                        Enter your token like this: **Bearer YOUR_TOKEN_HERE**",
+                        Enter your token: **YOUR_TOKEN_HERE**",
                     Name = "Authorization",
                     In = Microsoft.OpenApi.Models.ParameterLocation.Header,
                     Type = Microsoft.OpenApi.Models.SecuritySchemeType.Http,
