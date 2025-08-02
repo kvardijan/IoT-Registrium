@@ -19,7 +19,7 @@ public partial class Device
 
     public string FirmwareVersion { get; set; } = null!;
 
-    public string? Location { get; set; }
+    public int? Location { get; set; }
 
     public DateTime? LastSeen { get; set; }
 
