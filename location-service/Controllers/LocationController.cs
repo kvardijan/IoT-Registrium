@@ -1,16 +1,17 @@
 ﻿using location_service.Models;
+using location_service.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace location_service.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class LocationController : Controller
+    public class LocationController : ControllerBase
     {
-        private readonly LocationsDbContext _context;
-        public LocationController(LocationsDbContext context)
+        private readonly LocationService _locationService;
+        public LocationController(LocationService locationService)
         {
-            _context = context;
+            _locationService = locationService;
         }
     }
 }
