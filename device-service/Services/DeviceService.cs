@@ -61,7 +61,7 @@ namespace device_service.Services
             if (deviceUpdateDto.Location.HasValue)
                 existingDevice.Location = deviceUpdateDto.Location.Value;
 
-            existingDevice.LastSeen = DateTime.Now;
+            existingDevice.LastSeen = DateTime.UtcNow;
 
             _context.SaveChanges();
             return existingDevice;
@@ -78,7 +78,7 @@ namespace device_service.Services
                 Status = deviceRegistrationDto.Status,
                 FirmwareVersion = deviceRegistrationDto.FirmwareVersion,
                 Location = deviceRegistrationDto.Location,
-                LastSeen = DateTime.Now
+                LastSeen = DateTime.UtcNow
             };
         }
     }
