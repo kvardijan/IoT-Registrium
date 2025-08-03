@@ -1,4 +1,5 @@
 ﻿using event_service.Models;
+using event_service.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace event_service.Controllers
@@ -7,10 +8,10 @@ namespace event_service.Controllers
     [Route("api/[controller]")]
     public class EventController : Controller
     {
-        private readonly EventsDbContext _context;
-        public EventController(EventsDbContext context)
+        private readonly EventService _eventService;
+        public EventController(EventService eventService)
         {
-            _context = context;
+            _eventService = eventService;
         }
     }
 }
