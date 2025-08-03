@@ -18,9 +18,10 @@ namespace device_service.Controllers
 
         [Authorize]
         [HttpPost]
-        public IActionResult RegisterDevice([FromBody] DeviceRegistrationDto deviceRegistrationDto)
+        public async Task<IActionResult> RegisterDevice([FromBody] DeviceRegistrationDto deviceRegistrationDto)
         {
-            var device = _deviceService.RegisterDevice(deviceRegistrationDto);
+            var jwtToken = HttpContext.Request.Headers["Authorization"].ToString();
+            var device = await _deviceService.RegisterDevice(deviceRegistrationDto, jwtToken);
 
             if (device == null)
             {

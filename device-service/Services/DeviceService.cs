@@ -1,18 +1,23 @@
 ﻿using device_service.DTOs;
 using device_service.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Text;
+using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace device_service.Services
 {
     public class DeviceService
     {
         private readonly DevicesDbContext _context;
-        public DeviceService(DevicesDbContext context)
+        private readonly HttpClient _httpClient;
+        public DeviceService(DevicesDbContext context, IHttpClientFactory httpClientFactory)
         {
             _context = context;
+            _httpClient = httpClientFactory.CreateClient("EventService");
         }
 
-        public DeviceResponse? RegisterDevice(DeviceRegistrationDto deviceRegistrationDto)
+        public async Task<DeviceResponse?> RegisterDevice(DeviceRegistrationDto deviceRegistrationDto, string jwtToken)
         {
             Device newDevice = MapDevice(deviceRegistrationDto);
             _context.Devices.Add(newDevice);
@@ -29,6 +34,8 @@ namespace device_service.Services
             {
                 throw new Exception("Invalid Status Id.");
             }
+
+            await CreateEventAsync(newDevice, jwtToken);
 
             return new DeviceResponse
             {
@@ -188,6 +195,41 @@ namespace device_service.Services
                 Location = deviceRegistrationDto.Location,
                 LastSeen = DateTime.UtcNow
             };
+        }
+
+        private async Task CreateEventAsync(Device newDevice, string jwtToken)
+        {
+            var eventPayload = new
+            {
+                Device = newDevice.SerialNumber,
+                Type = 6, // device added
+                Data = JsonSerializer.Serialize(new DeviceEventDto
+                {
+                    Id = newDevice.Id,
+                    SerialNumber = newDevice.SerialNumber,
+                    Model = newDevice.Model,
+                    Manufacturer = newDevice.Manufacturer,
+                    Type = newDevice.Type,
+                    Status = newDevice.Status,
+                    FirmwareVersion = newDevice.FirmwareVersion,
+                    Location = newDevice.Location,
+                    LastSeen = newDevice.LastSeen
+                })
+            };
+
+            // Clear previous headers
+            _httpClient.DefaultRequestHeaders.Authorization = null;
+
+            if (!string.IsNullOrEmpty(jwtToken))
+            {
+                _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", jwtToken.Replace("Bearer ", ""));
+            }
+
+            var response = await _httpClient.PostAsJsonAsync("api/event", eventPayload);
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception($"Failed to create event: {response.StatusCode}");
+            }
         }
     }
 }

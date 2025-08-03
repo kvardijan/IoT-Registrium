@@ -90,6 +90,11 @@ namespace device_service
             // +++JWT CONFIG
             builder.Services.AddAuthorization();
 
+            builder.Services.AddHttpClient("EventService", client =>
+            {
+                client.BaseAddress = new Uri("http://localhost:5282/");
+            });
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
