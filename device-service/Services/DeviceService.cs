@@ -12,32 +12,121 @@ namespace device_service.Services
             _context = context;
         }
 
-        public Device? RegisterDevice(DeviceRegistrationDto deviceRegistrationDto)
+        public DeviceResponse? RegisterDevice(DeviceRegistrationDto deviceRegistrationDto)
         {
             Device newDevice = MapDevice(deviceRegistrationDto);
             _context.Devices.Add(newDevice);
             _context.SaveChanges();
-            return newDevice;
+
+            var type = _context.Types.FirstOrDefault(t => t.Id == newDevice.Type);
+            if (type == null)
+            {
+                throw new Exception("Invalid Type Id.");
+            }
+
+            var status = _context.Statuses.FirstOrDefault(s => s.Id == newDevice.Status);
+            if (status == null)
+            {
+                throw new Exception("Invalid Status Id.");
+            }
+
+            return new DeviceResponse
+            {
+                Id = newDevice.Id,
+                SerialNumber = newDevice.SerialNumber,
+                Model = newDevice.Model,
+                Manufacturer = newDevice.Manufacturer,
+                TypeId = newDevice.Type,
+                Type = type.Description,
+                StatusId = newDevice.Status,
+                Status = status.Description,
+                FirmwareVersion = newDevice.FirmwareVersion,
+                Location = newDevice.Location,
+                LastSeen = newDevice.LastSeen
+            };
         }
 
-        public Device? GetDeviceById(int id)
+        public DeviceResponse? GetDeviceById(int id)
         {
-            return _context.Devices.FirstOrDefault(d => d.Id == id);
+            var device = _context.Devices
+                .Include(d => d.TypeNavigation)
+                .Include(d => d.StatusNavigation)
+                .FirstOrDefault(d => d.Id == id);
+
+            if (device == null)
+            {
+                return null;
+            }
+
+            return new DeviceResponse
+            {
+                Id = device.Id,
+                SerialNumber = device.SerialNumber,
+                Model = device.Model,
+                Manufacturer = device.Manufacturer,
+                TypeId = device.Type,
+                Type = device.TypeNavigation.Description,
+                StatusId = device.Status,
+                Status = device.StatusNavigation.Description,
+                FirmwareVersion = device.FirmwareVersion,
+                Location = device.Location,
+                LastSeen = device.LastSeen
+            };
         }
 
-        public Device? GetDeviceBySerialNumber(string serialNumber)
+        public DeviceResponse? GetDeviceBySerialNumber(string serialNumber)
         {
-            return _context.Devices.FirstOrDefault(d => d.SerialNumber == serialNumber);
+            var device = _context.Devices
+                .Include(d => d.TypeNavigation)
+                .Include(d => d.StatusNavigation)
+                .FirstOrDefault(d => d.SerialNumber == serialNumber);
+
+            if (device == null)
+            {
+                return null;
+            }
+
+            return new DeviceResponse
+            {
+                Id = device.Id,
+                SerialNumber = device.SerialNumber,
+                Model = device.Model,
+                Manufacturer = device.Manufacturer,
+                TypeId = device.Type,
+                Type = device.TypeNavigation.Description,
+                StatusId = device.Status,
+                Status = device.StatusNavigation.Description,
+                FirmwareVersion = device.FirmwareVersion,
+                Location = device.Location,
+                LastSeen = device.LastSeen
+            };
         }
 
-        public List<Device> GetDevices()
+        public List<DeviceResponse> GetDevices()
         {
-            return _context.Devices.ToList();
+            return _context.Devices.Select(d => new DeviceResponse
+            {
+                Id = d.Id,
+                SerialNumber = d.SerialNumber,
+                Model = d.Model,
+                Manufacturer = d.Manufacturer,
+                TypeId = d.Type,
+                Type = d.TypeNavigation.Description,
+                StatusId = d.Status,
+                Status = d.StatusNavigation.Description,
+                FirmwareVersion = d.FirmwareVersion,
+                Location = d.Location,
+                LastSeen = d.LastSeen
+            }).ToList();
         }
 
-        public Device? UpdateDevice(int id, DeviceUpdateDto deviceUpdateDto)
+        public DeviceResponse? UpdateDevice(int id, DeviceUpdateDto deviceUpdateDto)
         {
-            var existingDevice = _context.Devices.FirstOrDefault(d => d.Id == id);
+            var existingDevice = _context.Devices
+                .Include(d => d.TypeNavigation)
+                .Include(d => d.StatusNavigation)
+                .FirstOrDefault(d => d.Id == id);
+
             if (existingDevice == null)
             {
                 return null;
@@ -64,7 +153,26 @@ namespace device_service.Services
             existingDevice.LastSeen = DateTime.UtcNow;
 
             _context.SaveChanges();
-            return existingDevice;
+
+            var updatedDevice = _context.Devices
+                .Include(d => d.TypeNavigation)
+                .Include(d => d.StatusNavigation)
+                .First(d => d.Id == id);
+
+            return new DeviceResponse
+            {
+                Id = updatedDevice.Id,
+                SerialNumber = updatedDevice.SerialNumber,
+                Model = updatedDevice.Model,
+                Manufacturer = updatedDevice.Manufacturer,
+                TypeId = updatedDevice.Type,
+                Type = updatedDevice.TypeNavigation.Description,
+                StatusId = updatedDevice.Status,
+                Status = updatedDevice.StatusNavigation.Description,
+                FirmwareVersion = updatedDevice.FirmwareVersion,
+                Location = updatedDevice.Location,
+                LastSeen = updatedDevice.LastSeen
+            };
         }
 
         private Device MapDevice(DeviceRegistrationDto deviceRegistrationDto)

@@ -27,7 +27,7 @@ namespace device_service.Controllers
                 return BadRequest(ApiResponse<object>.Fail("Failed to register device.", 400));
             }
 
-            return CreatedAtAction(nameof(GetDeviceById), new { id = device.Id }, ApiResponse<Device>.Ok(device));
+            return CreatedAtAction(nameof(GetDeviceById), new { id = device.Id }, ApiResponse<DeviceResponse>.Ok(device));
         }
 
         [Authorize]
@@ -39,7 +39,7 @@ namespace device_service.Controllers
             {
                 return NotFound(ApiResponse<object>.Fail("Device not found", 404));
             }
-            return Ok(ApiResponse<Device>.Ok(device));
+            return Ok(ApiResponse<DeviceResponse>.Ok(device));
         }
 
         [HttpGet("serial/{serial}")]
@@ -50,7 +50,7 @@ namespace device_service.Controllers
             {
                 return NotFound(ApiResponse<object>.Fail("Device not found", 404));
             }
-            return Ok(ApiResponse<Device>.Ok(device));
+            return Ok(ApiResponse<DeviceResponse>.Ok(device));
         }
 
         [HttpGet]
@@ -61,7 +61,7 @@ namespace device_service.Controllers
             {
                 return NotFound(ApiResponse<object>.Fail("No devices found", 404));
             }
-            return Ok(ApiResponse<List<Device>>.Ok(devices));
+            return Ok(ApiResponse<List<DeviceResponse>>.Ok(devices));
         }
 
         [Authorize]
@@ -75,7 +75,7 @@ namespace device_service.Controllers
                 return NotFound(ApiResponse<object>.Fail("Device not found", 404));
             }
 
-            return Ok(ApiResponse<Device>.Ok(updatedDevice));
+            return Ok(ApiResponse<DeviceResponse>.Ok(updatedDevice));
         }
     }
 }
