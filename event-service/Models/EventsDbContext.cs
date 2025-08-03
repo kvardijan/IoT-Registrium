@@ -39,7 +39,7 @@ public partial class EventsDbContext : DbContext
                 .HasMaxLength(100)
                 .HasColumnName("device");
             entity.Property(e => e.Timestamp)
-                .HasColumnType("timestamp without time zone")
+                .HasColumnType("timestamp with time zone")
                 .HasColumnName("timestamp");
             entity.Property(e => e.Type).HasColumnName("type");
 

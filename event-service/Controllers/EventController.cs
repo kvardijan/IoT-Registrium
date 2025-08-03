@@ -1,16 +1,69 @@
-﻿using event_service.Models;
+﻿using event_service.DTOs;
+using event_service.Models;
+using event_service.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace event_service.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class EventController : Controller
+    public class EventController : ControllerBase
     {
-        private readonly EventsDbContext _context;
-        public EventController(EventsDbContext context)
+        private readonly EventService _eventService;
+        public EventController(EventService eventService)
         {
-            _context = context;
+            _eventService = eventService;
+        }
+
+        [Authorize]
+        [HttpGet("{id}")]
+        public IActionResult GetEventById(int id)
+        {
+            var evnt = _eventService.GetEventById(id);
+            if (evnt == null)
+            {
+                return NotFound(ApiResponse<object>.Fail("Event with specified id not found.", 404));
+            }
+            return Ok(ApiResponse<EventResponse>.Ok(evnt));
+        }
+
+        [Authorize]
+        [HttpGet]
+        public IActionResult GetEvents()
+        {
+            var events = _eventService.GetEvents();
+            if (events == null)
+            {
+                return NotFound(ApiResponse<object>.Fail("No events found.", 404));
+            }
+            return Ok(ApiResponse<List<EventResponse>>.Ok(events));
+        }
+
+        [Authorize]
+        [HttpGet("device/{serialNumber}")]
+        public IActionResult GetEventsOfDevice(string serialNumber)
+        {
+            var events = _eventService.GetEventsOfDevice(serialNumber);
+            if (events == null)
+            {
+                return NotFound(ApiResponse<object>.Fail("No events found for device.", 404));
+            }
+            return Ok(ApiResponse<List<EventResponse>>.Ok(events));
+        }
+
+        [Authorize]
+        [HttpPost]
+        public IActionResult CreateEvent(EventCreationDto eventCreationDto)
+        {
+            var newEvent = _eventService.CreateEvent(eventCreationDto);
+            if (newEvent == null)
+            {
+                return BadRequest(ApiResponse<object>.Fail("Failed to create event.", 400));
+            }
+            return CreatedAtAction(nameof(GetEventById),
+                new { id = newEvent.Id },
+                ApiResponse<EventResponse>.Ok(newEvent));
         }
     }
 }
