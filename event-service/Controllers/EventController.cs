@@ -39,5 +39,17 @@ namespace event_service.Controllers
             }
             return Ok(ApiResponse<List<EventResponse>>.Ok(events));
         }
+
+        [Authorize]
+        [HttpPost]
+        public IActionResult CreateEvent(EventCreationDto eventCreationDto)
+        {
+            var newEvent = _eventService.CreateEvent(eventCreationDto);
+            if (newEvent == null)
+            {
+                return BadRequest(ApiResponse<object>.Fail("Failed to create event.", 400));
+            }
+            return Ok(ApiResponse<EventResponse>.Ok(newEvent));
+        }
     }
 }

@@ -36,5 +36,39 @@ namespace event_service.Services
                 Timestamp = e.Timestamp
             }).ToList();
         }
+
+        public EventResponse CreateEvent(EventCreationDto eventCreationDto)
+        {
+            var newEvent = MapEvent(eventCreationDto);
+            _context.Events.Add(newEvent);
+            _context.SaveChanges();
+
+            var type = _context.Types.FirstOrDefault(t => t.Id == newEvent.Type);
+            if (type == null)
+            {
+                throw new Exception("Invalid Type Id.");
+            }
+
+            return new EventResponse
+            {
+                Id = newEvent.Id,
+                Device = newEvent.Device,
+                TypeId = newEvent.Type,
+                Type = type.Description,
+                Data = newEvent.Data,
+                Timestamp = newEvent.Timestamp
+            };
+        }
+
+        private Event MapEvent(EventCreationDto eventCreationDto)
+        {
+            return new Event
+            {
+                Device = eventCreationDto.Device,
+                Type = eventCreationDto.Type,
+                Data = eventCreationDto.Data,
+                Timestamp = DateTime.UtcNow
+            };
+        }
     }
 }
