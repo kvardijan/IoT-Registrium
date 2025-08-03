@@ -1,4 +1,5 @@
-﻿using event_service.Models;
+﻿using event_service.DTOs;
+using event_service.Models;
 
 namespace event_service.Services
 {
@@ -10,14 +11,30 @@ namespace event_service.Services
             _context = context;
         }
 
-        public List<Event> GetEvents()
+        public List<EventResponse> GetEvents()
         {
-            return _context.Events.ToList();
+            return _context.Events.Select(e => new EventResponse
+            {
+                Id = e.Id,
+                Device = e.Device,
+                TypeId = e.Type,
+                Type = e.TypeNavigation.Description,
+                Data = e.Data,
+                Timestamp = e.Timestamp
+            }).ToList();
         }
 
-        public List<Event>? GetEventsOfDevice(string serialNumber)
+        public List<EventResponse>? GetEventsOfDevice(string serialNumber)
         {
-            return _context.Events.Where(e => e.Device == serialNumber).ToList();
+            return _context.Events.Where(e => e.Device == serialNumber).Select(e => new EventResponse
+            {
+                Id = e.Id,
+                Device = e.Device,
+                TypeId = e.Type,
+                Type = e.TypeNavigation.Description,
+                Data = e.Data,
+                Timestamp = e.Timestamp
+            }).ToList();
         }
     }
 }

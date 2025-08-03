@@ -1,4 +1,5 @@
-﻿using event_service.Models;
+﻿using event_service.DTOs;
+using event_service.Models;
 using event_service.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -24,7 +25,7 @@ namespace event_service.Controllers
             {
                 return NotFound(ApiResponse<object>.Fail("No events found.", 404));
             }
-            return Ok(ApiResponse<List<Event>>.Ok(events));
+            return Ok(ApiResponse<List<EventResponse>>.Ok(events));
         }
 
         [Authorize]
@@ -36,7 +37,7 @@ namespace event_service.Controllers
             {
                 return NotFound(ApiResponse<object>.Fail("No events found for device.", 404));
             }
-            return Ok(ApiResponse<List<Event>>.Ok(events));
+            return Ok(ApiResponse<List<EventResponse>>.Ok(events));
         }
     }
 }
