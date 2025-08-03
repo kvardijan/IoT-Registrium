@@ -17,6 +17,18 @@ namespace event_service.Controllers
         }
 
         [Authorize]
+        [HttpGet("{id}")]
+        public IActionResult GetEventById(int id)
+        {
+            var evnt = _eventService.GetEventById(id);
+            if (evnt == null)
+            {
+                return NotFound(ApiResponse<object>.Fail("Event with specified id not found.", 404));
+            }
+            return Ok(ApiResponse<EventResponse>.Ok(evnt));
+        }
+
+        [Authorize]
         [HttpGet]
         public IActionResult GetEvents()
         {
@@ -29,7 +41,7 @@ namespace event_service.Controllers
         }
 
         [Authorize]
-        [HttpGet("{serialNumber}")]
+        [HttpGet("device/{serialNumber}")]
         public IActionResult GetEventsOfDevice(string serialNumber)
         {
             var events = _eventService.GetEventsOfDevice(serialNumber);
@@ -49,7 +61,9 @@ namespace event_service.Controllers
             {
                 return BadRequest(ApiResponse<object>.Fail("Failed to create event.", 400));
             }
-            return Ok(ApiResponse<EventResponse>.Ok(newEvent));
+            return CreatedAtAction(nameof(GetEventById),
+                new { id = newEvent.Id },
+                ApiResponse<EventResponse>.Ok(newEvent));
         }
     }
 }
