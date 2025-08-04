@@ -22,7 +22,7 @@ namespace event_service
             //builder.Services.AddSwaggerGen();
             builder.Services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new() { Title = "device_service", Version = "v1" });
+                c.SwaggerDoc("v1", new() { Title = "event_service", Version = "v1" });
                 c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
                 {
                     Description = @"JWT Authorization header using the Bearer scheme.  
