@@ -64,6 +64,33 @@ namespace device_service.Services
             }
         }
 
+        public async Task CreateDeviceStatusChangeEventAsync(string device, string oldStatus, string newStatus, string jwtToken)
+        {
+            var eventPayload = new
+            {
+                Device = device,
+                Type = 2, // device status change
+                Data = JsonSerializer.Serialize(new
+                {
+                    oldStatus = oldStatus,
+                    newStatus = newStatus
+                })
+            };
+
+            _httpClient.DefaultRequestHeaders.Authorization = null;
+
+            if (!string.IsNullOrEmpty(jwtToken))
+            {
+                _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", jwtToken.Replace("Bearer ", ""));
+            }
+
+            var response = await _httpClient.PostAsJsonAsync("api/event", eventPayload);
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception($"Failed to create event: {response.StatusCode}");
+            }
+        }
+
         private DeviceEventDto MapDeviceEventDto(Device device)
         {
             return new DeviceEventDto

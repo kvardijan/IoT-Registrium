@@ -79,5 +79,20 @@ namespace device_service.Controllers
 
             return Ok(ApiResponse<DeviceResponse>.Ok(updatedDevice));
         }
+
+        [Authorize]
+        [HttpPatch("{id}/status")]
+        public async Task<IActionResult> UpdateDeviceStatus(int id, [FromBody] DeviceUpdateDto deviceUpdateDto)
+        {
+            var jwtToken = HttpContext.Request.Headers["Authorization"].ToString();
+            var updatedDevice = await _deviceService.UpdateDeviceStatus(id, deviceUpdateDto, jwtToken);
+
+            if (updatedDevice == null)
+            {
+                return NotFound(ApiResponse<object>.Fail("Device not found", 404));
+            }
+
+            return Ok(ApiResponse<DeviceResponse>.Ok(updatedDevice));
+        }
     }
 }
