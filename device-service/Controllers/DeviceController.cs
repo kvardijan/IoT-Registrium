@@ -67,9 +67,10 @@ namespace device_service.Controllers
 
         [Authorize]
         [HttpPatch("{id}")]
-        public IActionResult UpdateDevice(int id, [FromBody] DeviceUpdateDto deviceUpdateDto)
+        public async Task<IActionResult> UpdateDevice(int id, [FromBody] DeviceUpdateDto deviceUpdateDto)
         {
-            var updatedDevice = _deviceService.UpdateDevice(id, deviceUpdateDto);
+            var jwtToken = HttpContext.Request.Headers["Authorization"].ToString();
+            var updatedDevice = await _deviceService.UpdateDevice(id, deviceUpdateDto, jwtToken);
 
             if (updatedDevice == null)
             {

@@ -56,6 +56,7 @@ namespace device_service
             builder.Services.AddControllers();
 
             builder.Services.AddScoped<DeviceService>();
+            builder.Services.AddScoped<EventCreationService>();
 
             builder.Services.AddCors(options =>
             {

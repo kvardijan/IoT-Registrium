@@ -10,11 +10,12 @@ namespace device_service.Services
     public class DeviceService
     {
         private readonly DevicesDbContext _context;
-        private readonly HttpClient _httpClient;
-        public DeviceService(DevicesDbContext context, IHttpClientFactory httpClientFactory)
+        private readonly EventCreationService _eventCreationService;
+
+        public DeviceService(DevicesDbContext context, EventCreationService eventCreationService)
         {
             _context = context;
-            _httpClient = httpClientFactory.CreateClient("EventService");
+            _eventCreationService = eventCreationService;
         }
 
         public async Task<DeviceResponse?> RegisterDevice(DeviceRegistrationDto deviceRegistrationDto, string jwtToken)
@@ -35,7 +36,7 @@ namespace device_service.Services
                 throw new Exception("Invalid Status Id.");
             }
 
-            await CreateEventAsync(newDevice, jwtToken);
+            await _eventCreationService.CreateDeviceAddedEventAsync(newDevice, jwtToken);
 
             return new DeviceResponse
             {
@@ -65,20 +66,7 @@ namespace device_service.Services
                 return null;
             }
 
-            return new DeviceResponse
-            {
-                Id = device.Id,
-                SerialNumber = device.SerialNumber,
-                Model = device.Model,
-                Manufacturer = device.Manufacturer,
-                TypeId = device.Type,
-                Type = device.TypeNavigation.Description,
-                StatusId = device.Status,
-                Status = device.StatusNavigation.Description,
-                FirmwareVersion = device.FirmwareVersion,
-                Location = device.Location,
-                LastSeen = device.LastSeen
-            };
+            return MapDeviceResponse(device);
         }
 
         public DeviceResponse? GetDeviceBySerialNumber(string serialNumber)
@@ -93,20 +81,7 @@ namespace device_service.Services
                 return null;
             }
 
-            return new DeviceResponse
-            {
-                Id = device.Id,
-                SerialNumber = device.SerialNumber,
-                Model = device.Model,
-                Manufacturer = device.Manufacturer,
-                TypeId = device.Type,
-                Type = device.TypeNavigation.Description,
-                StatusId = device.Status,
-                Status = device.StatusNavigation.Description,
-                FirmwareVersion = device.FirmwareVersion,
-                Location = device.Location,
-                LastSeen = device.LastSeen
-            };
+            return MapDeviceResponse(device);
         }
 
         public List<DeviceResponse> GetDevices()
@@ -127,7 +102,7 @@ namespace device_service.Services
             }).ToList();
         }
 
-        public DeviceResponse? UpdateDevice(int id, DeviceUpdateDto deviceUpdateDto)
+        public async Task<DeviceResponse?> UpdateDevice(int id, DeviceUpdateDto deviceUpdateDto, string jwtToken)
         {
             var existingDevice = _context.Devices
                 .Include(d => d.TypeNavigation)
@@ -138,6 +113,21 @@ namespace device_service.Services
             {
                 return null;
             }
+
+            var oldDevice = new Device
+            {
+                Id = existingDevice.Id,
+                SerialNumber = existingDevice.SerialNumber,
+                Model = existingDevice.Model,
+                Manufacturer = existingDevice.Manufacturer,
+                Type = existingDevice.Type,
+                Status = existingDevice.Status,
+                FirmwareVersion = existingDevice.FirmwareVersion,
+                Location = existingDevice.Location,
+                LastSeen = existingDevice.LastSeen,
+                StatusNavigation = existingDevice.StatusNavigation,
+                TypeNavigation = existingDevice.TypeNavigation
+            };
 
             if (!string.IsNullOrEmpty(deviceUpdateDto.Model))
                 existingDevice.Model = deviceUpdateDto.Model;
@@ -166,20 +156,9 @@ namespace device_service.Services
                 .Include(d => d.StatusNavigation)
                 .First(d => d.Id == id);
 
-            return new DeviceResponse
-            {
-                Id = updatedDevice.Id,
-                SerialNumber = updatedDevice.SerialNumber,
-                Model = updatedDevice.Model,
-                Manufacturer = updatedDevice.Manufacturer,
-                TypeId = updatedDevice.Type,
-                Type = updatedDevice.TypeNavigation.Description,
-                StatusId = updatedDevice.Status,
-                Status = updatedDevice.StatusNavigation.Description,
-                FirmwareVersion = updatedDevice.FirmwareVersion,
-                Location = updatedDevice.Location,
-                LastSeen = updatedDevice.LastSeen
-            };
+            await _eventCreationService.CreateDeviceInfoUpdatedEventAsync(oldDevice, updatedDevice, jwtToken);
+
+            return MapDeviceResponse(updatedDevice);
         }
 
         private Device MapDevice(DeviceRegistrationDto deviceRegistrationDto)
@@ -197,39 +176,22 @@ namespace device_service.Services
             };
         }
 
-        private async Task CreateEventAsync(Device newDevice, string jwtToken)
+        private DeviceResponse MapDeviceResponse(Device device)
         {
-            var eventPayload = new
+            return new DeviceResponse
             {
-                Device = newDevice.SerialNumber,
-                Type = 6, // device added
-                Data = JsonSerializer.Serialize(new DeviceEventDto
-                {
-                    Id = newDevice.Id,
-                    SerialNumber = newDevice.SerialNumber,
-                    Model = newDevice.Model,
-                    Manufacturer = newDevice.Manufacturer,
-                    Type = newDevice.Type,
-                    Status = newDevice.Status,
-                    FirmwareVersion = newDevice.FirmwareVersion,
-                    Location = newDevice.Location,
-                    LastSeen = newDevice.LastSeen
-                })
+                Id = device.Id,
+                SerialNumber = device.SerialNumber,
+                Model = device.Model,
+                Manufacturer = device.Manufacturer,
+                TypeId = device.Type,
+                Type = device.TypeNavigation.Description,
+                StatusId = device.Status,
+                Status = device.StatusNavigation.Description,
+                FirmwareVersion = device.FirmwareVersion,
+                Location = device.Location,
+                LastSeen = device.LastSeen
             };
-
-            // Clear previous headers
-            _httpClient.DefaultRequestHeaders.Authorization = null;
-
-            if (!string.IsNullOrEmpty(jwtToken))
-            {
-                _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", jwtToken.Replace("Bearer ", ""));
-            }
-
-            var response = await _httpClient.PostAsJsonAsync("api/event", eventPayload);
-            if (!response.IsSuccessStatusCode)
-            {
-                throw new Exception($"Failed to create event: {response.StatusCode}");
-            }
         }
     }
 }
