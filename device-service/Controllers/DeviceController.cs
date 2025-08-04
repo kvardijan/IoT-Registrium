@@ -96,11 +96,26 @@ namespace device_service.Controllers
         }
 
         [Authorize]
-        [HttpPatch("{id}/data")]
+        [HttpPost("{id}/data")]
         public async Task<IActionResult> StoreDeviceData(int id, [FromBody] DeviceDataDto deviceDataDto)
         {
             var jwtToken = HttpContext.Request.Headers["Authorization"].ToString();
             var updatedDevice = await _deviceService.StoreDeviceData(id, deviceDataDto, jwtToken);
+
+            if (updatedDevice == null)
+            {
+                return NotFound(ApiResponse<object>.Fail("Device not found", 404));
+            }
+
+            return Ok(ApiResponse<DeviceResponse>.Ok(updatedDevice));
+        }
+
+        [Authorize]
+        [HttpPost("{id}/command")]
+        public async Task<IActionResult> SendCommandToDevice(int id, [FromBody] DeviceCommandDto deviceCommandDto)
+        {
+            var jwtToken = HttpContext.Request.Headers["Authorization"].ToString();
+            var updatedDevice = await _deviceService.SendCommandToDevice(id, deviceCommandDto, jwtToken);
 
             if (updatedDevice == null)
             {

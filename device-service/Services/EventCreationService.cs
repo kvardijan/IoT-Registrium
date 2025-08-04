@@ -96,10 +96,36 @@ namespace device_service.Services
             var eventPayload = new
             {
                 Device = device,
-                Type = 5, // device status change
+                Type = 5, // device received data
                 Data = JsonSerializer.Serialize(new
                 {
                     RecordedData = data.RecordedData
+                })
+            };
+
+            _httpClient.DefaultRequestHeaders.Authorization = null;
+
+            if (!string.IsNullOrEmpty(jwtToken))
+            {
+                _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", jwtToken.Replace("Bearer ", ""));
+            }
+
+            var response = await _httpClient.PostAsJsonAsync("api/event", eventPayload);
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception($"Failed to create event: {response.StatusCode}");
+            }
+        }
+
+        public async Task CreateDeviceSentCommandEventAsync(string device, DeviceCommandDto command, string jwtToken)
+        {
+            var eventPayload = new
+            {
+                Device = device,
+                Type = 3, // device sent command
+                Data = JsonSerializer.Serialize(new
+                {
+                    Command = command.Command
                 })
             };
 
