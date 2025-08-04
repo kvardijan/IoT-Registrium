@@ -177,8 +177,9 @@ namespace device_service.Services
 
             if (deviceUpdateDto.Status.HasValue)
                 existingDevice.Status = deviceUpdateDto.Status.Value;
+            else return null;
 
-            existingDevice.LastSeen = DateTime.UtcNow;
+                existingDevice.LastSeen = DateTime.UtcNow;
 
             _context.SaveChanges();
 
@@ -249,6 +250,42 @@ namespace device_service.Services
             await _eventCreationService.CreateDeviceSentCommandEventAsync(
                 updatedDevice.SerialNumber,
                 deviceCommandDto,
+                jwtToken);
+
+            return MapDeviceResponse(updatedDevice);
+        }
+
+        public async Task<DeviceResponse?> UpdateDeviceFirmware(int id, DeviceUpdateDto deviceUpdateDto, string jwtToken)
+        {
+            var existingDevice = _context.Devices
+                .Include(d => d.TypeNavigation)
+                .Include(d => d.StatusNavigation)
+                .FirstOrDefault(d => d.Id == id);
+
+            if (existingDevice == null)
+            {
+                return null;
+            }
+
+            string oldFirmwareVersion = existingDevice.FirmwareVersion;
+
+            if (!string.IsNullOrEmpty(deviceUpdateDto.FirmwareVersion))
+                existingDevice.FirmwareVersion = deviceUpdateDto.FirmwareVersion;
+            else return null;
+
+            existingDevice.LastSeen = DateTime.UtcNow;
+
+            _context.SaveChanges();
+
+            var updatedDevice = _context.Devices
+                .Include(d => d.TypeNavigation)
+                .Include(d => d.StatusNavigation)
+                .First(d => d.Id == id);
+
+            await _eventCreationService.CreateDeviceFirmwareChangeEventAsync(
+                updatedDevice.SerialNumber,
+                oldFirmwareVersion,
+                updatedDevice.FirmwareVersion,
                 jwtToken);
 
             return MapDeviceResponse(updatedDevice);

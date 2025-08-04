@@ -143,6 +143,33 @@ namespace device_service.Services
             }
         }
 
+        public async Task CreateDeviceFirmwareChangeEventAsync(string device, string oldFirmwareVersion, string newFirmwareVersion, string jwtToken)
+        {
+            var eventPayload = new
+            {
+                Device = device,
+                Type = 4, // device firmware update
+                Data = JsonSerializer.Serialize(new
+                {
+                    oldFirmwareVersion = oldFirmwareVersion,
+                    newFirmwareVersion = newFirmwareVersion
+                })
+            };
+
+            _httpClient.DefaultRequestHeaders.Authorization = null;
+
+            if (!string.IsNullOrEmpty(jwtToken))
+            {
+                _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", jwtToken.Replace("Bearer ", ""));
+            }
+
+            var response = await _httpClient.PostAsJsonAsync("api/event", eventPayload);
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception($"Failed to create event: {response.StatusCode}");
+            }
+        }
+
         private DeviceEventDto MapDeviceEventDto(Device device)
         {
             return new DeviceEventDto

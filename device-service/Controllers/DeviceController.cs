@@ -89,7 +89,7 @@ namespace device_service.Controllers
 
             if (updatedDevice == null)
             {
-                return NotFound(ApiResponse<object>.Fail("Device not found", 404));
+                return BadRequest(ApiResponse<object>.Fail("Error updating device status", 400));
             }
 
             return Ok(ApiResponse<DeviceResponse>.Ok(updatedDevice));
@@ -120,6 +120,21 @@ namespace device_service.Controllers
             if (updatedDevice == null)
             {
                 return NotFound(ApiResponse<object>.Fail("Device not found", 404));
+            }
+
+            return Ok(ApiResponse<DeviceResponse>.Ok(updatedDevice));
+        }
+
+        [Authorize]
+        [HttpPatch("{id}/firmware")]
+        public async Task<IActionResult> UpdateDeviceFirmware(int id, [FromBody] DeviceUpdateDto deviceUpdateDto)
+        {
+            var jwtToken = HttpContext.Request.Headers["Authorization"].ToString();
+            var updatedDevice = await _deviceService.UpdateDeviceFirmware(id, deviceUpdateDto, jwtToken);
+
+            if (updatedDevice == null)
+            {
+                return BadRequest(ApiResponse<object>.Fail("Error updating device firmware", 400));
             }
 
             return Ok(ApiResponse<DeviceResponse>.Ok(updatedDevice));
