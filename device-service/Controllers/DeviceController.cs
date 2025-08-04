@@ -18,16 +18,17 @@ namespace device_service.Controllers
 
         [Authorize]
         [HttpPost]
-        public IActionResult RegisterDevice([FromBody] DeviceRegistrationDto deviceRegistrationDto)
+        public async Task<IActionResult> RegisterDevice([FromBody] DeviceRegistrationDto deviceRegistrationDto)
         {
-            var device = _deviceService.RegisterDevice(deviceRegistrationDto);
+            var jwtToken = HttpContext.Request.Headers["Authorization"].ToString();
+            var device = await _deviceService.RegisterDevice(deviceRegistrationDto, jwtToken);
 
             if (device == null)
             {
                 return BadRequest(ApiResponse<object>.Fail("Failed to register device.", 400));
             }
 
-            return CreatedAtAction(nameof(GetDeviceById), new { id = device.Id }, ApiResponse<Device>.Ok(device));
+            return CreatedAtAction(nameof(GetDeviceById), new { id = device.Id }, ApiResponse<DeviceResponse>.Ok(device));
         }
 
         [Authorize]
@@ -39,7 +40,7 @@ namespace device_service.Controllers
             {
                 return NotFound(ApiResponse<object>.Fail("Device not found", 404));
             }
-            return Ok(ApiResponse<Device>.Ok(device));
+            return Ok(ApiResponse<DeviceResponse>.Ok(device));
         }
 
         [HttpGet("serial/{serial}")]
@@ -50,7 +51,7 @@ namespace device_service.Controllers
             {
                 return NotFound(ApiResponse<object>.Fail("Device not found", 404));
             }
-            return Ok(ApiResponse<Device>.Ok(device));
+            return Ok(ApiResponse<DeviceResponse>.Ok(device));
         }
 
         [HttpGet]
@@ -61,21 +62,82 @@ namespace device_service.Controllers
             {
                 return NotFound(ApiResponse<object>.Fail("No devices found", 404));
             }
-            return Ok(ApiResponse<List<Device>>.Ok(devices));
+            return Ok(ApiResponse<List<DeviceResponse>>.Ok(devices));
         }
 
         [Authorize]
         [HttpPatch("{id}")]
-        public IActionResult UpdateDevice(int id, [FromBody] DeviceUpdateDto deviceUpdateDto)
+        public async Task<IActionResult> UpdateDevice(int id, [FromBody] DeviceUpdateDto deviceUpdateDto)
         {
-            var updatedDevice = _deviceService.UpdateDevice(id, deviceUpdateDto);
+            var jwtToken = HttpContext.Request.Headers["Authorization"].ToString();
+            var updatedDevice = await _deviceService.UpdateDevice(id, deviceUpdateDto, jwtToken);
 
             if (updatedDevice == null)
             {
                 return NotFound(ApiResponse<object>.Fail("Device not found", 404));
             }
 
-            return Ok(ApiResponse<Device>.Ok(updatedDevice));
+            return Ok(ApiResponse<DeviceResponse>.Ok(updatedDevice));
+        }
+
+        [Authorize]
+        [HttpPatch("{id}/status")]
+        public async Task<IActionResult> UpdateDeviceStatus(int id, [FromBody] DeviceUpdateDto deviceUpdateDto)
+        {
+            var jwtToken = HttpContext.Request.Headers["Authorization"].ToString();
+            var updatedDevice = await _deviceService.UpdateDeviceStatus(id, deviceUpdateDto, jwtToken);
+
+            if (updatedDevice == null)
+            {
+                return BadRequest(ApiResponse<object>.Fail("Error updating device status", 400));
+            }
+
+            return Ok(ApiResponse<DeviceResponse>.Ok(updatedDevice));
+        }
+
+        [Authorize]
+        [HttpPost("{id}/data")]
+        public async Task<IActionResult> StoreDeviceData(int id, [FromBody] DeviceDataDto deviceDataDto)
+        {
+            var jwtToken = HttpContext.Request.Headers["Authorization"].ToString();
+            var updatedDevice = await _deviceService.StoreDeviceData(id, deviceDataDto, jwtToken);
+
+            if (updatedDevice == null)
+            {
+                return NotFound(ApiResponse<object>.Fail("Device not found", 404));
+            }
+
+            return Ok(ApiResponse<DeviceResponse>.Ok(updatedDevice));
+        }
+
+        [Authorize]
+        [HttpPost("{id}/command")]
+        public async Task<IActionResult> SendCommandToDevice(int id, [FromBody] DeviceCommandDto deviceCommandDto)
+        {
+            var jwtToken = HttpContext.Request.Headers["Authorization"].ToString();
+            var updatedDevice = await _deviceService.SendCommandToDevice(id, deviceCommandDto, jwtToken);
+
+            if (updatedDevice == null)
+            {
+                return NotFound(ApiResponse<object>.Fail("Device not found", 404));
+            }
+
+            return Ok(ApiResponse<DeviceResponse>.Ok(updatedDevice));
+        }
+
+        [Authorize]
+        [HttpPatch("{id}/firmware")]
+        public async Task<IActionResult> UpdateDeviceFirmware(int id, [FromBody] DeviceUpdateDto deviceUpdateDto)
+        {
+            var jwtToken = HttpContext.Request.Headers["Authorization"].ToString();
+            var updatedDevice = await _deviceService.UpdateDeviceFirmware(id, deviceUpdateDto, jwtToken);
+
+            if (updatedDevice == null)
+            {
+                return BadRequest(ApiResponse<object>.Fail("Error updating device firmware", 400));
+            }
+
+            return Ok(ApiResponse<DeviceResponse>.Ok(updatedDevice));
         }
     }
 }

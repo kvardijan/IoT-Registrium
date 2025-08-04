@@ -56,6 +56,7 @@ namespace device_service
             builder.Services.AddControllers();
 
             builder.Services.AddScoped<DeviceService>();
+            builder.Services.AddScoped<EventCreationService>();
 
             builder.Services.AddCors(options =>
             {
@@ -89,6 +90,11 @@ namespace device_service
 
             // +++JWT CONFIG
             builder.Services.AddAuthorization();
+
+            builder.Services.AddHttpClient("EventService", client =>
+            {
+                client.BaseAddress = new Uri("http://localhost:5282/");
+            });
 
             var app = builder.Build();
 

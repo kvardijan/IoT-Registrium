@@ -40,7 +40,7 @@ public partial class DevicesDbContext : DbContext
                 .HasMaxLength(45)
                 .HasColumnName("firmware_version");
             entity.Property(e => e.LastSeen)
-                .HasColumnType("timestamp without time zone")
+                .HasColumnType("timestamp with time zone")
                 .HasColumnName("last_seen");
             entity.Property(e => e.Location)
                 .HasMaxLength(45)
