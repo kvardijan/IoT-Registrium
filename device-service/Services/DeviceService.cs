@@ -196,6 +196,35 @@ namespace device_service.Services
             return MapDeviceResponse(updatedDevice);
         }
 
+        public async Task<DeviceResponse?> StoreDeviceData(int id, DeviceDataDto deviceDataDto, string jwtToken)
+        {
+            var existingDevice = _context.Devices
+                .Include(d => d.TypeNavigation)
+                .Include(d => d.StatusNavigation)
+                .FirstOrDefault(d => d.Id == id);
+
+            if (existingDevice == null)
+            {
+                return null;
+            }
+
+            existingDevice.LastSeen = DateTime.UtcNow;
+
+            _context.SaveChanges();
+
+            var updatedDevice = _context.Devices
+                .Include(d => d.TypeNavigation)
+                .Include(d => d.StatusNavigation)
+                .First(d => d.Id == id);
+
+            await _eventCreationService.CreateDeviceDataRecordingEventAsync(
+                existingDevice.SerialNumber,
+                deviceDataDto,
+                jwtToken);
+
+            return MapDeviceResponse(updatedDevice);
+        }
+
         private Device MapDevice(DeviceRegistrationDto deviceRegistrationDto)
         {
             return new Device
