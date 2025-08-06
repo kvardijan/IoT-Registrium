@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
+import { UserManagerService } from '../user-manager-service';
 
 @Component({
   selector: 'app-devices-table',
@@ -13,7 +14,7 @@ export class DevicesTable implements OnInit {
   devices: any[] = [];
   locationsMap: Map<number, string> = new Map<number, string>();
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient, public userManager: UserManagerService) {
 
   }
 

@@ -1,5 +1,5 @@
 <div class="table-container">
-    <button>Register device</button>
+    <button *ngIf="userManager.isLoggedIn()">Register device</button>
 <table>
     <thead>
             <tr>
