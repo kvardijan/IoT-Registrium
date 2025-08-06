@@ -11,13 +11,41 @@ import { CommonModule } from '@angular/common';
 })
 export class DevicesTable implements OnInit {
   devices: any[] = [];
+  locationsMap: Map<number, string> = new Map<number, string>();
 
   constructor(private http: HttpClient) {
 
   }
 
   ngOnInit(): void {
-    this.fetchDevices();
+    this.loadDevicesAndLocations();
+    
+  }
+
+  loadDevicesAndLocations(){
+    this.fetchLocations(() => {
+      this.fetchDevices();
+    })
+  }
+
+  fetchLocations(callback: () => void) {
+    this.http.get<any>('http://localhost:5261/api/location')
+      .subscribe({
+        next: (response) => {
+          if (response.success) {
+            response.data.forEach((loc: any) => {
+              this.locationsMap.set(loc.id, loc.address);
+            });
+          } else {
+            console.error('Failed to fetch locations:', response.error);
+          }
+          callback();
+        },
+        error: (err) => {
+          console.error('Error fetching locations', err);
+          callback();
+        }
+      });
   }
 
   fetchDevices() {
@@ -25,8 +53,10 @@ export class DevicesTable implements OnInit {
       .subscribe({
         next: (response) => {
           if (response.success) {
-            this.devices = response.data;
-            console.log(this.devices);
+            this.devices = response.data.map((device: any) => ({
+              ...device,
+              locationName: this.locationsMap.get(device.location) || 'Unknown'
+            }));
           } else {
             console.error('Failed to fetch devices:', response.error);
           }
