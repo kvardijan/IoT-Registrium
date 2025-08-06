@@ -1,0 +1,22 @@
+<table>
+    <thead>
+            <tr>
+                <th>Serial number</th>
+                <th>Model</th>
+                <th>Manufacturer</th>
+                <th>Type</th>
+                <th>Status</th>
+                <th>Location</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let device of devices" [ngClass]="getStatusClass(device.status)">
+                <td>{{device.serialNumber}}</td>
+                <td>{{device.model}}</td>
+                <td>{{device.manufacturer}}</td>
+                <td>{{device.type}}</td>
+                <td>{{device.status}}</td>
+                <td>{{device.locationName}}</td>
+            </tr>
+        </tbody>
+</table>
