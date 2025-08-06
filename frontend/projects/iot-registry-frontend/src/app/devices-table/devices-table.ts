@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-devices-table',
-    standalone: true, 
+  standalone: true,
   imports: [CommonModule],
   templateUrl: './devices-table.html',
   styleUrl: './devices-table.scss'
@@ -19,10 +19,9 @@ export class DevicesTable implements OnInit {
 
   ngOnInit(): void {
     this.loadDevicesAndLocations();
-    
   }
 
-  loadDevicesAndLocations(){
+  loadDevicesAndLocations() {
     this.fetchLocations(() => {
       this.fetchDevices();
     })
@@ -68,17 +67,17 @@ export class DevicesTable implements OnInit {
   }
 
   getStatusClass(status: string): string {
-  switch (status.toLowerCase()) {
-    case 'active':
-      return 'green';
-    case 'idle':
-      return 'yellow';
-    case 'deactivated':
-      return 'gray';
-    case 'error':
-      return 'red';
-    default:
-      return '';
+    switch (status.toLowerCase()) {
+      case 'active':
+        return 'green';
+      case 'idle':
+        return 'yellow';
+      case 'deactivated':
+        return 'gray';
+      case 'error':
+        return 'red';
+      default:
+        return '';
+    }
   }
-}
 }
