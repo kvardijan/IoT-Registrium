@@ -18,6 +18,7 @@ export class App {
   onLoginClick() {
     if (this.userManager.isLoggedIn()) {
       this.userManager.logout();
+      this.router.navigate(['/']);
     } else {
       this.router.navigate(['/login']);
     }
