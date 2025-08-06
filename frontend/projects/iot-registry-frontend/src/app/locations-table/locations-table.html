@@ -1,1 +1,19 @@
-<p>locations-table works!</p>
+<table>
+    <thead>
+            <tr>
+                <th>Address</th>
+                <th>Description</th>
+                <th>Latitude</th>
+                <th>Longitude</th>
+
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let location of locations">
+                <td>{{location.address}}</td>
+                <td>{{location.description}}</td>
+                <td>{{location.latitude}}</td>
+                <td>{{location.longitude}}</td>
+            </tr>
+        </tbody>
+</table>
