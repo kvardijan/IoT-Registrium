@@ -4,7 +4,7 @@
     </div>
     <div>
         <a class="nav-link" routerLink="/devicestable">Devices</a>
-        <a *ngIf="userManager.isLoggedIn()" class="nav-link">Locations</a>
+        <a *ngIf="userManager.isLoggedIn()" class="nav-link" routerLink="/locations">Locations</a>
         <a *ngIf="userManager.isLoggedIn()" class="nav-link">Statistics</a>
         <a class="nav-link" (click)="onLoginClick()">{{ userManager.isLoggedIn() ? 'Logout' : 'Log in' }}</a>
     </div>

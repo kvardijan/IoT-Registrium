@@ -14,6 +14,7 @@ import { FormsModule } from '@angular/forms';
 export class Login implements OnInit {
   username = '';
   password = '';
+  message = '';
 
   constructor(private userManager: UserManagerService, private router: Router) {
 
@@ -24,16 +25,19 @@ export class Login implements OnInit {
   }
 
   login() {
+    this.message = '';
     this.userManager.login(this.username, this.password).subscribe({
       next: (response) => {
         if (response.success) {
           this.userManager.setToken(response.data);
           this.router.navigate(['/']);
         } else {
+          this.message = 'Login failed. Please check credentials.';
           console.error('Login failed: ', response.error);
         }
       },
       error: (err) => {
+        this.message = 'Login failed. Please check credentials.';
         console.error('Login failed', err);
       }
     });
