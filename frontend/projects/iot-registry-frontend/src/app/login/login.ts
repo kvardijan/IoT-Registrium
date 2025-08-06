@@ -1,21 +1,41 @@
 import { Component, OnInit } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
+import { UserManagerService } from '../user-manager-service';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [],
+  imports: [CommonModule, FormsModule],
   templateUrl: './login.html',
   styleUrl: './login.scss'
 })
 export class Login implements OnInit {
+  username = '';
+  password = '';
 
-  constructor(private http: HttpClient) {
+  constructor(private userManager: UserManagerService, private router: Router) {
 
   }
 
   ngOnInit(): void {
-    
+
+  }
+
+  login() {
+    this.userManager.login(this.username, this.password).subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.userManager.setToken(response.data);
+          this.router.navigate(['/']);
+        } else {
+          console.error('Login failed: ', response.error);
+        }
+      },
+      error: (err) => {
+        console.error('Login failed', err);
+      }
+    });
   }
 }

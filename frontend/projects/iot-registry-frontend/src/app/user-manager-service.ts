@@ -15,7 +15,7 @@ export class UserManagerService {
   }
 
   login(username: string, password: string) {
-    return this.http.post<{ token: string }>('http://localhost:5081/api/user', {
+    return this.http.post<{ success: boolean; data: string; error: string }>('http://localhost:5081/api/user/login', {
       username,
       password
     });
