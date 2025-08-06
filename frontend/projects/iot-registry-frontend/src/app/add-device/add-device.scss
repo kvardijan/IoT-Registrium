@@ -27,6 +27,7 @@
             flex-direction: column;
             flex: 1;
             min-width: 200px;
+            max-width: 300px;
         }
 
         label {
@@ -43,6 +44,16 @@
             border: none;
             width: 100%;
         }
+
+        ::ng-deep .mat-mdc-form-field .mat-mdc-text-field-wrapper {
+            background-color: #0044ff1e;
+            border-radius: 6px;
+            width: 100%;
+        }
+
+        ::ng-deep .mat-mdc-select-panel {
+            background-color: #0044ff1e;
+        }
     }
 
     #message {
@@ -54,29 +65,6 @@
         color: #8a0101;
     }
 
-    label {
-        align-self: flex-start;
-        font-weight: bold;
-    }
-
-    input {
-        background-color: #0044ff1e;
-        width: 240px;
-        height: 30px;
-        border-radius: 6px;
-        box-shadow: 2px 2px 4px #000000;
-        border: none;
-    }
-
-    select {
-        background-color: #0044ff1e;
-        width: 240px;
-        height: 30px;
-        border-radius: 6px;
-        box-shadow: 2px 2px 4px #000000;
-        border: none;
-    }
-
     button {
         background-color: #185bc7;
         color: white;
@@ -85,7 +73,8 @@
         height: 40px;
         border-radius: 6px;
         box-shadow: 2px 2px 4px #000000;
-        align-self: center;
+        align-self: flex-start;
         margin-top: 30px;
+        margin-left: 20px;
     }
 }

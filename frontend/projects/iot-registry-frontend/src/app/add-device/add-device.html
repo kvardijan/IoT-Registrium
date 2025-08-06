@@ -22,15 +22,29 @@
         <div class="row">
             <div class="field">
                 <label for="type">Type: *</label>
-                <select [(ngModel)]="type" name="type" required>
-                    <option *ngFor="let t of types" [value]="t">{{ t }}</option>
-                </select>
+                <mat-form-field name="type" appearance="fill">
+                    <mat-select [(value)]="type" required>
+                        <mat-option *ngFor="let t of types" [value]="t">{{ t }}</mat-option>
+                    </mat-select>
+                </mat-form-field>
             </div>
             <div class="field">
                 <label for="status">Status: *</label>
-                <select [(ngModel)]="status" name="status" required>
-                    <option *ngFor="let s of statuses" [value]="s">{{ s }}</option>
-                </select>
+                <mat-form-field name="status" appearance="fill">
+                    <mat-label>Status:</mat-label>
+                    <mat-select [(value)]="status" required>
+                        <mat-option *ngFor="let s of statuses" [value]="s">{{ s }}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div class="field">
+                <label for="location">Location:</label>
+                <mat-form-field name="location" appearance="fill">
+                    <mat-label>Location:</mat-label>
+                    <mat-select [(value)]="location">
+                        <mat-option *ngFor="let l of locations" [value]="l">{{ l }}</mat-option>
+                    </mat-select>
+                </mat-form-field>
             </div>
         </div>
 
@@ -38,12 +52,6 @@
             <div class="field">
                 <label for="firmware">Firmware version: *</label>
                 <input type="text" [(ngModel)]="firmware" name="firmware" placeholder="1.0.0" required />
-            </div>
-            <div class="field">
-                <label for="location">Location:</label>
-                <select [(ngModel)]="location" name="location">
-                    <option *ngFor="let l of locations" [value]="l">{{ l }}</option>
-                </select>
             </div>
         </div>
 
