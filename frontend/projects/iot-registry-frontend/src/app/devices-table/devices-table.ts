@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { UserManagerService } from '../user-manager-service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-devices-table',
@@ -14,7 +15,7 @@ export class DevicesTable implements OnInit {
   devices: any[] = [];
   locationsMap: Map<number, string> = new Map<number, string>();
 
-  constructor(private http: HttpClient, public userManager: UserManagerService) {
+  constructor(private router: Router, private http: HttpClient, public userManager: UserManagerService) {
 
   }
 
@@ -79,6 +80,14 @@ export class DevicesTable implements OnInit {
         return 'red';
       default:
         return '';
+    }
+  }
+
+  onRegisterDeviceClick(){
+    if(this.userManager.isLoggedIn()){
+      this.router.navigate(['/adddevice']);
+    }else{
+      this.router.navigate(['/login']);
     }
   }
 }
