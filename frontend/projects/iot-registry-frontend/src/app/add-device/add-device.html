@@ -1,7 +1,7 @@
 <div class="add-device-container">
     <h1>Register new IoT device</h1>
     <div id="message" *ngIf="message">{{ message }}</div>
-    <form>
+    <form (ngSubmit)="registerDevice()">
         <div class="row">
             <div class="field">
                 <label for="serialNumber">Serial number: *</label>
@@ -13,7 +13,7 @@
                 <input type="text" [(ngModel)]="model" name="model" placeholder="NeoSensonX" required />
             </div>
             <div class="field">
-                <label for="manufacturer">Manufacturer: *</label>
+                <label for="manufacturer">Manufacturer:</label>
                 <input type="text" [(ngModel)]="manufacturer" name="manufacturer" placeholder="Neo Devices d.o.o."
                     required />
             </div>

@@ -93,4 +93,43 @@ export class AddDevice implements OnInit {
         }
       });
   }
+
+  registerDevice() {
+    const jwt = this.userManager.getToken();
+    const headers = {
+      Authorization: 'Bearer ' + jwt
+    };
+    this.message = '';
+
+    const body: any = {
+      serialNumber: this.serialNumber,
+      model: this.model,
+      type: this.type,
+      status: this.status,
+      firmwareVersion: this.firmware
+    };
+
+    if (this.manufacturer) {
+      body.manufacturer = this.manufacturer;
+    }
+
+    if (this.location) {
+      body.location = this.location;
+    }
+
+    this.http.post<{ success: boolean; data: string; error: string }>('http://localhost:5208/api/device', body, { headers })
+      .subscribe({
+        next: (response) => {
+          if (response.success) {
+            this.message = 'Device registered successfully.';
+          } else {
+            this.message = 'Error with device registration: ' + response.error;
+          }
+        },
+        error: (err) => {
+          this.message = 'Error with device registration!';
+          console.log(err);
+        }
+      });
+  }
 }
