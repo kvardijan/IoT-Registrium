@@ -31,6 +31,7 @@ export class AddDevice implements OnInit {
   ngOnInit(): void {
     this.fetchStatuses();
     this.fetchTypes();
+    this.fetchLocations();
   }
 
   fetchStatuses() {
@@ -55,7 +56,7 @@ export class AddDevice implements OnInit {
       });
   }
 
-    fetchTypes() {
+  fetchTypes() {
     const jwt = this.userManager.getToken();
     const headers = {
       Authorization: 'Bearer ' + jwt
@@ -73,6 +74,22 @@ export class AddDevice implements OnInit {
         },
         error: (err) => {
           console.error('Error fetching types', err);
+        }
+      });
+  }
+
+  fetchLocations() {
+    this.http.get<any>('http://localhost:5261/api/location')
+      .subscribe({
+        next: (response) => {
+          if (response.success) {
+            this.locations = response.data;
+          } else {
+            console.error('Failed to fetch locations:', response.error);
+          }
+        },
+        error: (err) => {
+          console.error('Error fetching locations', err);
         }
       });
   }
