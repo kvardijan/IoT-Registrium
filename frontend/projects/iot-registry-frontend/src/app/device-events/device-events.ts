@@ -1,11 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
+import { DatePipe } from '@angular/common';
 import { UserManagerService } from '../user-manager-service';
 @Component({
   selector: 'app-device-events',
   standalone: true,
-  imports: [],
+  imports: [DatePipe],
   templateUrl: './device-events.html',
   styleUrl: './device-events.scss'
 })
