@@ -16,7 +16,11 @@
         <tbody>
             @for (device of devices; track device) {
             <tr [ngClass]="getStatusClass(device.status)">
-                <td>{{device.serialNumber}}</td>
+                <td>
+                    <a [routerLink]="['/devices', device.serialNumber, 'events']">
+                        {{ device.serialNumber }}
+                    </a>
+                </td>
                 <td>{{device.model}}</td>
                 <td>{{device.manufacturer}}</td>
                 <td>{{device.type}}</td>
