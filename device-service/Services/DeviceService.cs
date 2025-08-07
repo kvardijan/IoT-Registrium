@@ -102,6 +102,16 @@ namespace device_service.Services
             }).ToList();
         }
 
+        public List<Status> GetStatuses()
+        {
+            return _context.Statuses.ToList();
+        }
+
+        public List<Models.Type> GetTypes()
+        {
+            return _context.Types.ToList();
+        }
+
         public async Task<DeviceResponse?> UpdateDevice(int id, DeviceUpdateDto deviceUpdateDto, string jwtToken)
         {
             var existingDevice = _context.Devices

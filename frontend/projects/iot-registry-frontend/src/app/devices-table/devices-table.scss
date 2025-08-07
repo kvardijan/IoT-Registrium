@@ -10,10 +10,14 @@ $green-background: #daffe7b6;
 $green-text: #016b56;
 
 table {
-    width: calc(100% - 100px);;
+    width: calc(100% - 100px);
+    ;
     border-collapse: collapse;
-    margin: 50px;
+    margin-top: 20px;
+    margin-left: 50px;
+    margin-right: 50px;
     margin-bottom: 120px;
+
     border-radius: 10px;
     box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
     overflow: hidden;
@@ -34,19 +38,45 @@ table {
     tr:last-child td {
         border-bottom: none;
     }
-    
+
     .green {
-    background-color: $green-background;
-    color: $green-text;
+        background-color: $green-background;
+        color: $green-text;
     }
 
     .red {
-    background-color: $red-background;
-    color: $red-text;
+        background-color: $red-background;
+        color: $red-text;
     }
 
     .yellow {
-    background-color: $yellow-background;
-    color: $yellow-text;
+        background-color: $yellow-background;
+        color: $yellow-text;
+    }
+}
+
+.table-container {
+    margin: 50px; // same margin as your table
+    margin-bottom: 120px;
+
+    display: flex;
+    flex-direction: column;
+
+    button {
+        padding: 10px;
+        cursor: pointer;
+        border-radius: 10px;
+        border: 0;
+        background-color: #0b68d4;
+        font-size: 20px;
+        text-decoration: none;
+        color: white;
+        display: flex;
+        align-self: flex-end;
+        margin-right: 50px;
+
+        &:hover {
+            background-color: #4870b0a0;
+        }
     }
 }
