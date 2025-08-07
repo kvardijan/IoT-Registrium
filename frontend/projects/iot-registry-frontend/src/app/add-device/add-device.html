@@ -1,6 +1,8 @@
 <div class="add-device-container">
     <h1>Register new IoT device</h1>
-    <div id="message" *ngIf="message">{{ message }}</div>
+    @if(message){
+    <div id="message">{{ message }}</div>
+    }
     <form (ngSubmit)="registerDevice()">
         <div class="row">
             <div class="field">
