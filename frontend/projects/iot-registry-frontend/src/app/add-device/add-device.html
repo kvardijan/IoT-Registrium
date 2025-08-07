@@ -24,7 +24,9 @@
                 <label for="type">Type: *</label>
                 <mat-form-field name="type" appearance="fill">
                     <mat-select [(value)]="type" required>
-                        <mat-option *ngFor="let t of types" [value]="t">{{ t }}</mat-option>
+                        @for (t of types; track t.id){
+                        <mat-option [value]="t.id">{{ t.description }}</mat-option>
+                        }
                     </mat-select>
                 </mat-form-field>
             </div>
@@ -33,7 +35,11 @@
                 <mat-form-field name="status" appearance="fill">
                     <mat-label>Status:</mat-label>
                     <mat-select [(value)]="status" required>
-                        <mat-option *ngFor="let s of statuses" [value]="s">{{ s }}</mat-option>
+                        @for (s of statuses; track s.id) {
+                        <mat-option [value]="s.id">
+                            {{ s.description }}
+                        </mat-option>
+                        }
                     </mat-select>
                 </mat-form-field>
             </div>
@@ -42,7 +48,9 @@
                 <mat-form-field name="location" appearance="fill">
                     <mat-label>Location:</mat-label>
                     <mat-select [(value)]="location">
-                        <mat-option *ngFor="let l of locations" [value]="l">{{ l }}</mat-option>
+                        @for (l of locations; track l.id) {
+                        <mat-option [value]="l.id">{{ l.address }}</mat-option>
+                        }
                     </mat-select>
                 </mat-form-field>
             </div>
