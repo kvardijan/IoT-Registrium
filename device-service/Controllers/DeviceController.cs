@@ -66,6 +66,30 @@ namespace device_service.Controllers
         }
 
         [Authorize]
+        [HttpGet("statuses")]
+        public IActionResult GetStatuses()
+        {
+            var statuses = _deviceService.GetStatuses();
+            if (statuses == null)
+            {
+                return NotFound(ApiResponse<object>.Fail("No statuses found", 404));
+            }
+            return Ok(ApiResponse<List<Status>>.Ok(statuses));
+        }
+
+        [Authorize]
+        [HttpGet("types")]
+        public IActionResult GetTypes()
+        {
+            var types = _deviceService.GetTypes();
+            if (types == null)
+            {
+                return NotFound(ApiResponse<object>.Fail("No types found", 404));
+            }
+            return Ok(ApiResponse<List<Models.Type>>.Ok(types));
+        }
+
+        [Authorize]
         [HttpPatch("{id}")]
         public async Task<IActionResult> UpdateDevice(int id, [FromBody] DeviceUpdateDto deviceUpdateDto)
         {
