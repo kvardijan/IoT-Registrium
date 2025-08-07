@@ -18,7 +18,6 @@ export class DeviceEvents implements OnInit {
   ngOnInit(): void {
     this.serialNumber = this.route.snapshot.paramMap.get('serialNumber') || '';
     this.fetchEvents();
-    console.log('Serial number from route:', this.serialNumber);
   }
 
   fetchEvents() {

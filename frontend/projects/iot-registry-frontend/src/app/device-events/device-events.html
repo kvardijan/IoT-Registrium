@@ -1,1 +1,20 @@
-<p>device-events works!</p>
+<div class="table-container">
+    <table>
+        <thead>
+            <tr>
+                <th>Type</th>
+                <th>Data</th>
+                <th>Timestamp</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (event of events; track event) {
+            <tr>
+                <td>{{event.type}}</td>
+                <td>{{event.data}}</td>
+                <td>{{event.timestamp}}</td>
+            </tr>
+            }
+        </tbody>
+    </table>
+</div>

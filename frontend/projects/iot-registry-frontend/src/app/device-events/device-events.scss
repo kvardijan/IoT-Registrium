@@ -1,0 +1,40 @@
+$blue-background: #b8d9ff;
+$blue-text: #0b68d4;
+
+table {
+    width: calc(100% - 100px);
+    border-collapse: collapse;
+    margin-top: 20px;
+    margin-left: 50px;
+    margin-right: 50px;
+    margin-bottom: 120px;
+
+    border-radius: 10px;
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    overflow: hidden;
+
+    th,
+    td {
+        font-size: large;
+        padding: 13px 20px;
+        text-align: left;
+        border-bottom: 1px solid $blue-background;
+    }
+
+    th {
+        background-color: $blue-background;
+        color: $blue-text;
+    }
+
+    tr:last-child td {
+        border-bottom: none;
+    }
+}
+
+.table-container {
+    margin: 50px;
+    margin-bottom: 120px;
+
+    display: flex;
+    flex-direction: column;
+}
