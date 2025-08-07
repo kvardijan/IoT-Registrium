@@ -30,7 +30,9 @@ export class DeviceEvents implements OnInit {
       .subscribe({
         next: (response) => {
           if (response.success) {
-            this.events = response.data;
+            this.events = response.data.sort((a: any, b: any) =>
+              new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+            );
             console.log(this.events);
           } else {
             console.error('Failed to fetch events:', response.error);
