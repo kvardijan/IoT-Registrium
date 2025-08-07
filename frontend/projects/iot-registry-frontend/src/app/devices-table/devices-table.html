@@ -1,7 +1,7 @@
 <div class="table-container">
     <button *ngIf="userManager.isLoggedIn()" (click)="onRegisterDeviceClick()">Register device</button>
-<table>
-    <thead>
+    <table>
+        <thead>
             <tr>
                 <th>Serial number</th>
                 <th>Model</th>
@@ -12,7 +12,8 @@
             </tr>
         </thead>
         <tbody>
-            <tr *ngFor="let device of devices" [ngClass]="getStatusClass(device.status)">
+            @for (device of devices; track device) {
+            <tr [ngClass]="getStatusClass(device.status)">
                 <td>{{device.serialNumber}}</td>
                 <td>{{device.model}}</td>
                 <td>{{device.manufacturer}}</td>
@@ -20,6 +21,7 @@
                 <td>{{device.status}}</td>
                 <td>{{device.locationName}}</td>
             </tr>
+            }
         </tbody>
-</table>
+    </table>
 </div>

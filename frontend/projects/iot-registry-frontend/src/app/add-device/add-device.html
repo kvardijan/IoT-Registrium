@@ -45,7 +45,6 @@
             <div class="field">
                 <label for="location">Location:</label>
                 <mat-form-field name="location" appearance="fill">
-                    <mat-label>Location:</mat-label>
                     <mat-select [(value)]="location">
                         @for (l of locations; track l.id) {
                         <mat-option [value]="l.id">{{ l.address }}</mat-option>
