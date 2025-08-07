@@ -30,6 +30,7 @@ export class AddDevice implements OnInit {
 
   ngOnInit(): void {
     this.fetchStatuses();
+    this.fetchTypes();
   }
 
   fetchStatuses() {
@@ -50,6 +51,28 @@ export class AddDevice implements OnInit {
         },
         error: (err) => {
           console.error('Error fetching statuses', err);
+        }
+      });
+  }
+
+    fetchTypes() {
+    const jwt = this.userManager.getToken();
+    const headers = {
+      Authorization: 'Bearer ' + jwt
+    };
+
+    this.http.get<any>('http://localhost:5208/api/device/types', { headers })
+      .subscribe({
+        next: (response) => {
+          if (response.success) {
+            this.types = response.data;
+            console.log(this.types);
+          } else {
+            console.error('Failed to fetch types:', response.error);
+          }
+        },
+        error: (err) => {
+          console.error('Error fetching types', err);
         }
       });
   }
