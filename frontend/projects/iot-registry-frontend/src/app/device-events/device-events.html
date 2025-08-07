@@ -1,0 +1,21 @@
+<h1>Event history for device {{serialNumber}}</h1>
+<div class="table-container">
+    <table>
+        <thead>
+            <tr>
+                <th>Type</th>
+                <th>Data</th>
+                <th>Timestamp</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (event of events; track event) {
+            <tr>
+                <td>{{event.type}}</td>
+                <td>{{event.data}}</td>
+                <td>{{event.timestamp | date:'yyyy-MM-dd HH:mm:ss'}}</td>
+            </tr>
+            }
+        </tbody>
+    </table>
+</div>
