@@ -1,1 +1,63 @@
-<p>edit-device works!</p>
+<div class="edit-device-container">
+    @if(message){
+    <div id="message">{{ message }}</div>
+    }
+    <form (ngSubmit)="editDevice()">
+        <div class="row">
+            <div class="field">
+                <label for="model">Model: *</label>
+                <input type="text" [(ngModel)]="model" name="model" placeholder="NeoSensonX" required />
+            </div>
+            <div class="field">
+                <label for="manufacturer">Manufacturer:</label>
+                <input type="text" [(ngModel)]="manufacturer" name="manufacturer" placeholder="Neo Devices d.o.o."
+                    required />
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="field">
+                <label for="type">Type: *</label>
+                <mat-form-field name="type" appearance="fill">
+                    <mat-select [(value)]="type" required>
+                        @for (t of types; track t.id){
+                        <mat-option [value]="t.id">{{ t.description }}</mat-option>
+                        }
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div class="field">
+                <label for="status">Status: *</label>
+                <mat-form-field name="status" appearance="fill">
+                    <mat-select [(value)]="status" required>
+                        @for (s of statuses; track s.id) {
+                        <mat-option [value]="s.id">
+                            {{ s.description }}
+                        </mat-option>
+                        }
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div class="field">
+                <label for="location">Location:</label>
+                <mat-form-field name="location" appearance="fill">
+                    <mat-select [(value)]="location">
+                        @for (l of locations; track l.id) {
+                        <mat-option [value]="l.id">{{ l.address }}</mat-option>
+                        }
+                    </mat-select>
+                </mat-form-field>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="field">
+                <label for="firmware">Firmware version: *</label>
+                <input type="text" [(ngModel)]="firmware" name="firmware" placeholder="1.0.0" required />
+            </div>
+        </div>
+
+        <button type="submit">Edit</button>
+    </form>
+
+</div>
