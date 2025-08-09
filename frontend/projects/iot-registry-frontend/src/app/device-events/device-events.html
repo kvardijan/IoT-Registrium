@@ -1,5 +1,5 @@
 <h2>Edit device {{serialNumber}}</h2>
-<app-edit-device></app-edit-device>
+<app-edit-device (deviceUpdated)="fetchEvents()"></app-edit-device>
 
 <h2>Event history for device {{serialNumber}}</h2>
 <div class="table-container">

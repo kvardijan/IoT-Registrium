@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -23,6 +23,7 @@ export class EditDevice implements OnInit {
   type = -1;
   status = -1;
   location = -1;
+  @Output() deviceUpdated = new EventEmitter<void>();
 
   types: any[] = [];
   statuses: any[] = [];
@@ -150,6 +151,7 @@ export class EditDevice implements OnInit {
         next: (response) => {
           if (response.success) {
             this.message = 'Device edited successfully.';
+            this.deviceUpdated.emit();
           } else {
             this.message = 'Error with device info editing: ' + response.error;
           }
