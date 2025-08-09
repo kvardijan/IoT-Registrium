@@ -14,6 +14,7 @@ import { HttpClient } from '@angular/common/http';
   styleUrl: './edit-device.scss'
 })
 export class EditDevice implements OnInit {
+  id = '';
   serialNumber = '';
   message = '';
   model = '';
@@ -44,6 +45,7 @@ export class EditDevice implements OnInit {
         next: (response) => {
           if (response.success) {
             console.log(response.data);
+            this.id = response.data.id;
             this.model = response.data.model;
             this.manufacturer = response.data.manufacturer;
             this.firmware = response.data.firmwareVersion;
@@ -122,6 +124,40 @@ export class EditDevice implements OnInit {
 
 
   editDevice() {
+    const jwt = this.userManager.getToken();
+    const headers = {
+      Authorization: 'Bearer ' + jwt
+    };
+    this.message = '';
 
+    const body: any = {
+      model: this.model,
+      type: this.type,
+      status: this.status,
+      firmwareVersion: this.firmware
+    };
+
+    if (this.manufacturer) {
+      body.manufacturer = this.manufacturer;
+    }
+
+    if (this.location) {
+      body.location = this.location;
+    }
+
+    this.http.patch<{ success: boolean; data: string; error: string }>('http://localhost:5208/api/device/' + this.id, body, { headers })
+      .subscribe({
+        next: (response) => {
+          if (response.success) {
+            this.message = 'Device edited successfully.';
+          } else {
+            this.message = 'Error with device info editing: ' + response.error;
+          }
+        },
+        error: (err) => {
+          this.message = 'Error with device info editing!';
+          console.log(err);
+        }
+      });
   }
 }
