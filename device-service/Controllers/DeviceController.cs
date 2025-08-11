@@ -65,7 +65,6 @@ namespace device_service.Controllers
             return Ok(ApiResponse<List<DeviceResponse>>.Ok(devices));
         }
 
-        [Authorize]
         [HttpGet("statuses")]
         public IActionResult GetStatuses()
         {
@@ -77,7 +76,6 @@ namespace device_service.Controllers
             return Ok(ApiResponse<List<Status>>.Ok(statuses));
         }
 
-        [Authorize]
         [HttpGet("types")]
         public IActionResult GetTypes()
         {
