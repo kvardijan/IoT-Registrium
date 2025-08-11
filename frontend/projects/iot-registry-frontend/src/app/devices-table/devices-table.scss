@@ -4,8 +4,8 @@ $red-background: #ffe6e5b9;
 $red-text: #b81c1c;
 $yellow-background: #feffdbc4;
 $yellow-text: #b68730;
-$gray-background: #d3d3d3;
-$gray-text: #8585859e;
+$gray-background: #d3d3d358;
+$gray-text: #858585;
 $green-background: #daffe7b6;
 $green-text: #016b56;
 
@@ -52,6 +52,11 @@ table {
     .yellow {
         background-color: $yellow-background;
         color: $yellow-text;
+    }
+
+    .gray {
+        background-color: $gray-background;
+        color: $gray-text;
     }
 }
 

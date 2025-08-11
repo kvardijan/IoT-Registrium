@@ -12,11 +12,12 @@ import Feature from 'ol/Feature';
 import Point from 'ol/geom/Point';
 //import { Icon, Style } from 'ol/style';
 import { Style, Fill, Stroke, Circle as CircleStyle } from 'ol/style';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-devices-map',
   standalone: true,
-  imports: [RouterModule],
+  imports: [RouterModule, CommonModule],
   templateUrl: './devices-map.html',
   styleUrl: './devices-map.scss'
 })
@@ -157,5 +158,20 @@ export class DevicesMap implements AfterViewInit, OnInit {
   onMarkerClick(locationId: number, locationName: string) {
     this.devicesAtLocation = this.devices.filter(device => device.location === locationId);
     console.log('Marker clicked:', locationId, locationName);
+  }
+
+  getStatusClass(status: string): string {
+    switch (status.toLowerCase()) {
+      case 'active':
+        return 'green';
+      case 'idle':
+        return 'yellow';
+      case 'deactivated':
+        return 'gray';
+      case 'error':
+        return 'red';
+      default:
+        return '';
+    }
   }
 }

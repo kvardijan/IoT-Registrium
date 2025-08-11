@@ -1,3 +1,8 @@
+$green-background: #daffe7b6;
+$gray-background: #d3d3d358;
+$yellow-background: #feffdbc4;
+$red-background: #ffe6e5b9;
+
 #map {
     width: 70%;
     height: calc(100vh - 80px);
@@ -49,4 +54,26 @@
             margin-top: 20px;
         }
     }
+}
+
+.green {
+    background-color: $green-background;
+}
+
+.red {
+    background-color: $red-background;
+}
+
+.yellow {
+    background-color: $yellow-background;
+}
+
+.gray {
+    background-color: $gray-background;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
 }

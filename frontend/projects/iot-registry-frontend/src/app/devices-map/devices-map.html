@@ -10,7 +10,7 @@
             @if(devicesAtLocation.length > 0) {
             <ul>
                 @for (device of devicesAtLocation; track device.serialNumber) {
-                <li>
+                <li [ngClass]="getStatusClass(device.status)">
                     <div>Serial: {{device.serialNumber}}</div>
                     <div>Type: {{device.type}}</div>
                     <div>Status: {{device.status}}</div>
