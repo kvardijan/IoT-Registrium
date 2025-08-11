@@ -50,6 +50,18 @@ export class DevicesMap implements AfterViewInit, OnInit {
       controls: [],
     });
 
+    this.map.on('click', (evt) => {
+      const feature = this.map.forEachFeatureAtPixel(evt.pixel, (feat) => feat);
+      if (feature) {
+        const locationId = feature.get('locationId');
+        const locationName = feature.get('locationName');
+        if (locationId !== undefined && locationName !== undefined) {
+          this.onMarkerClick(locationId, locationName);
+        }
+      }
+    });
+
+
     if (this.locations.length) {
       this.addLocationMarkers();
     }
@@ -141,4 +153,7 @@ export class DevicesMap implements AfterViewInit, OnInit {
     this.map.addLayer(this.markerLayer);
   }
 
+  onMarkerClick(locationId: number, locationName: string) {
+    console.log('Marker clicked:', locationId, locationName);
+  }
 }
