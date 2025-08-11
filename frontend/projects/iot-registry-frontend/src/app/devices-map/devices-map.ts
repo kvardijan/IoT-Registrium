@@ -10,7 +10,7 @@ import { Router, RouterModule } from '@angular/router';
 @Component({
   selector: 'app-devices-map',
   standalone: true,
-  imports: [],
+  imports: [RouterModule],
   templateUrl: './devices-map.html',
   styleUrl: './devices-map.scss'
 })
