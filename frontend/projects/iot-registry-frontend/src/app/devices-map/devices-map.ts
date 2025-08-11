@@ -6,6 +6,12 @@ import OSM from 'ol/source/OSM';
 import { fromLonLat } from 'ol/proj';
 import { HttpClient } from '@angular/common/http';
 import { Router, RouterModule } from '@angular/router';
+import VectorLayer from 'ol/layer/Vector';
+import VectorSource from 'ol/source/Vector';
+import Feature from 'ol/Feature';
+import Point from 'ol/geom/Point';
+//import { Icon, Style } from 'ol/style';
+import { Style, Fill, Stroke, Circle as CircleStyle } from 'ol/style';
 
 @Component({
   selector: 'app-devices-map',
@@ -15,11 +21,13 @@ import { Router, RouterModule } from '@angular/router';
   styleUrl: './devices-map.scss'
 })
 export class DevicesMap implements AfterViewInit, OnInit {
-  varazdinLatitude = 46.3057;
-  varazdinLongitude = 16.3366;
+  krapinaLatitude = 46.1605;
+  krapinaLongitude = 15.8724;
   devices: any[] = [];
   locationsMap: Map<number, string> = new Map<number, string>();
   locations: any[] = [];
+  private map!: OLMap;
+  private markerLayer?: VectorLayer;
 
   constructor(private router: Router, private http: HttpClient) { }
 
@@ -28,7 +36,7 @@ export class DevicesMap implements AfterViewInit, OnInit {
   }
 
   ngAfterViewInit(): void {
-    new OLMap({
+    this.map = new OLMap({
       target: 'map',
       layers: [
         new TileLayer({
@@ -36,16 +44,25 @@ export class DevicesMap implements AfterViewInit, OnInit {
         })
       ],
       view: new View({
-        center: fromLonLat([this.varazdinLongitude, this.varazdinLatitude]),
+        center: fromLonLat([this.krapinaLongitude, this.krapinaLatitude]),
         zoom: 14
       }),
       controls: [],
     });
+
+    if (this.locations.length) {
+      this.addLocationMarkers();
+    }
   }
 
   loadDevicesAndLocations() {
     this.fetchLocations(() => {
       this.fetchDevices();
+      if (this.map) {
+        this.addLocationMarkers();
+      } else {
+        console.log('no map yet');
+      }
     })
   }
 
@@ -88,4 +105,40 @@ export class DevicesMap implements AfterViewInit, OnInit {
         }
       });
   }
+
+  private addLocationMarkers() {
+    if (!this.map || !this.locations?.length) return;
+
+    if (this.markerLayer) {
+      this.map.removeLayer(this.markerLayer);
+    }
+
+    const features = this.locations.map(loc => {
+      const coords = fromLonLat([loc.longitude, loc.latitude]);
+      const f = new Feature({
+        geometry: new Point(coords),
+        locationId: loc.id,
+        locationName: loc.address
+      });
+      return f;
+    });
+
+    const vectorSource = new VectorSource({ features });
+
+    const markerStyle = new Style({
+      image: new CircleStyle({
+        radius: 8,
+        fill: new Fill({ color: '#1976d2' }),
+        stroke: new Stroke({ color: '#000000ff', width: 2 })
+      })
+    });
+
+    this.markerLayer = new VectorLayer({
+      source: vectorSource,
+      style: markerStyle
+    });
+
+    this.map.addLayer(this.markerLayer);
+  }
+
 }
