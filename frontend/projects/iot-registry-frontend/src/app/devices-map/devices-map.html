@@ -2,6 +2,23 @@
     <div id="map"></div>
     <div id="info-column">
         <button routerLink="/devicestable">Devices table</button>
-        <div id="info"></div>
+        <div id="info">
+            <h3>Devices at selected location</h3>
+            @if(devicesAtLocation.length === 0) {
+            <div>No devices found at this location.</div>
+            }
+            @if(devicesAtLocation.length > 0) {
+            <ul>
+                @for (device of devicesAtLocation; track device.serialNumber) {
+                <li>
+                    <div>Serial: {{device.serialNumber}}</div>
+                    <div>Model: {{device.model}}</div>
+                    <div>Manufacturer: {{device.manufacturer}}</div>
+                </li>
+                <br>
+                }
+            </ul>
+            }
+        </div>
     </div>
 </div>

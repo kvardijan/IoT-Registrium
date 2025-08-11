@@ -26,6 +26,7 @@ export class DevicesMap implements AfterViewInit, OnInit {
   devices: any[] = [];
   locationsMap: Map<number, string> = new Map<number, string>();
   locations: any[] = [];
+  devicesAtLocation: any[] = [];
   private map!: OLMap;
   private markerLayer?: VectorLayer;
 
@@ -154,6 +155,7 @@ export class DevicesMap implements AfterViewInit, OnInit {
   }
 
   onMarkerClick(locationId: number, locationName: string) {
+    this.devicesAtLocation = this.devices.filter(device => device.location === locationId);
     console.log('Marker clicked:', locationId, locationName);
   }
 }
