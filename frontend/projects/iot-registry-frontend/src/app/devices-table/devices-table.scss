@@ -4,8 +4,8 @@ $red-background: #ffe6e5b9;
 $red-text: #b81c1c;
 $yellow-background: #feffdbc4;
 $yellow-text: #b68730;
-$gray-background: #d3d3d3;
-$gray-text: #8585859e;
+$gray-background: #d3d3d358;
+$gray-text: #858585;
 $green-background: #daffe7b6;
 $green-text: #016b56;
 
@@ -53,6 +53,11 @@ table {
         background-color: $yellow-background;
         color: $yellow-text;
     }
+
+    .gray {
+        background-color: $gray-background;
+        color: $gray-text;
+    }
 }
 
 .table-container {
@@ -62,21 +67,46 @@ table {
     display: flex;
     flex-direction: column;
 
-    button {
-        padding: 10px;
-        cursor: pointer;
-        border-radius: 10px;
-        border: 0;
-        background-color: #0b68d4;
-        font-size: 20px;
-        text-decoration: none;
-        color: white;
+    #buttons {
         display: flex;
-        align-self: flex-end;
-        margin-right: 50px;
+        flex-direction: row;
+        justify-content: space-between;
+        width: 100%;
 
-        &:hover {
-            background-color: #4870b0a0;
+        #devicesMapButton {
+            padding: 10px;
+            cursor: pointer;
+            border-radius: 10px;
+            border: 0;
+            background-color: #0b68d4;
+            font-size: 20px;
+            text-decoration: none;
+            color: white;
+            display: flex;
+            align-self: flex-start;
+            margin-left: 50px;
+
+            &:hover {
+                background-color: #4870b0a0;
+            }
+        }
+
+        #registerDeviceButton {
+            padding: 10px;
+            cursor: pointer;
+            border-radius: 10px;
+            border: 0;
+            background-color: #0b68d4;
+            font-size: 20px;
+            text-decoration: none;
+            color: white;
+            display: flex;
+            align-self: flex-end;
+            margin-right: 50px;
+
+            &:hover {
+                background-color: #4870b0a0;
+            }
         }
     }
 }

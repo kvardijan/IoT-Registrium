@@ -1,7 +1,10 @@
 <div class="table-container">
-    @if(userManager.isLoggedIn()){
-    <button (click)="onRegisterDeviceClick()">Register device</button>
-    }
+    <div id="buttons">
+        <button routerLink="/devicesmap" id="devicesMapButton">Devices map</button>
+        @if(userManager.isLoggedIn()){
+        <button id="registerDeviceButton" (click)="onRegisterDeviceClick()">Register device</button>
+        }
+    </div>
     <table>
         <thead>
             <tr>

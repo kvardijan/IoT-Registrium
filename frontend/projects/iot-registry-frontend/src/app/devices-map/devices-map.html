@@ -1,0 +1,26 @@
+<div id="map-container">
+    <div id="map"></div>
+    <div id="info-column">
+        <button routerLink="/devicestable">Devices table</button>
+        <div id="info">
+            <h3>Devices at selected location</h3>
+            @if(devicesAtLocation.length === 0) {
+            <div>No devices found at this location.</div>
+            }
+            @if(devicesAtLocation.length > 0) {
+            <ul>
+                @for (device of devicesAtLocation; track device.serialNumber) {
+                <li [ngClass]="getStatusClass(device.status)">
+                    <div><b>Serial:</b> {{device.serialNumber}}</div>
+                    <div><b>Type:</b> {{device.type}}</div>
+                    <div><b>Status:</b> {{device.status}}</div>
+                    <div><b>Model:</b> {{device.model}}</div>
+                    <div><b>Manufacturer:</b> {{device.manufacturer}}</div>
+                </li>
+                <br>
+                }
+            </ul>
+            }
+        </div>
+    </div>
+</div>
