@@ -11,11 +11,11 @@
             <ul>
                 @for (device of devicesAtLocation; track device.serialNumber) {
                 <li [ngClass]="getStatusClass(device.status)">
-                    <div>Serial: {{device.serialNumber}}</div>
-                    <div>Type: {{device.type}}</div>
-                    <div>Status: {{device.status}}</div>
-                    <div>Model: {{device.model}}</div>
-                    <div>Manufacturer: {{device.manufacturer}}</div>
+                    <div><b>Serial:</b> {{device.serialNumber}}</div>
+                    <div><b>Type:</b> {{device.type}}</div>
+                    <div><b>Status:</b> {{device.status}}</div>
+                    <div><b>Model:</b> {{device.model}}</div>
+                    <div><b>Manufacturer:</b> {{device.manufacturer}}</div>
                 </li>
                 <br>
                 }
