@@ -12,6 +12,8 @@
                 @for (device of devicesAtLocation; track device.serialNumber) {
                 <li>
                     <div>Serial: {{device.serialNumber}}</div>
+                    <div>Type: {{device.type}}</div>
+                    <div>Status: {{device.status}}</div>
                     <div>Model: {{device.model}}</div>
                     <div>Manufacturer: {{device.manufacturer}}</div>
                 </li>
