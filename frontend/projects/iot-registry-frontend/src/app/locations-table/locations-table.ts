@@ -1,18 +1,20 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
+import { UserManagerService } from '../user-manager-service';
+import { Router, RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-locations-table',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule],
   templateUrl: './locations-table.html',
   styleUrl: './locations-table.scss'
 })
 export class LocationsTable implements OnInit {
   locations: any[] = [];
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient, private router: Router, public userManager: UserManagerService) {
 
   }
 
@@ -20,7 +22,7 @@ export class LocationsTable implements OnInit {
     this.fetchLocations();
   }
 
-    fetchLocations() {
+  fetchLocations() {
     this.http.get<any>('http://localhost:5261/api/location')
       .subscribe({
         next: (response) => {
@@ -34,5 +36,13 @@ export class LocationsTable implements OnInit {
           console.error('Error fetching locations', err);
         }
       });
+  }
+
+  onAddLocationClick() {
+    if (this.userManager.isLoggedIn()) {
+      this.router.navigate(['/addlocation']);
+    } else {
+      this.router.navigate(['/login']);
+    }
   }
 }

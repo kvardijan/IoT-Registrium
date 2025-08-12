@@ -1,0 +1,76 @@
+.add-location-container {
+    margin-top: 40px;
+    margin-left: 100px;
+    margin-right: 100px;
+    display: flex;
+    flex-direction: column;
+    justify-content: left;
+    align-items: left;
+
+    form {
+        margin-top: 50px;
+        display: flex;
+        flex-direction: row;
+        gap: 35px;
+        align-items: flex-start;
+
+        .column {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            width: 100%;
+        }
+
+        .field {
+            margin-left: 20px;
+            margin-right: 20px;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            min-width: 200px;
+            max-width: 300px;
+        }
+
+        label {
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+
+        input,
+        select {
+            background-color: #0044ff1e;
+            height: 30px;
+            border-radius: 6px;
+            box-shadow: 2px 2px 4px #000000;
+            border: none;
+            width: 100%;
+        }
+    }
+
+    #message {
+        margin-bottom: 10px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        color: #8a0101;
+    }
+
+    button {
+        background-color: #185bc7;
+        color: white;
+        font-weight: bold;
+        width: 170px;
+        height: 40px;
+        border-radius: 6px;
+        box-shadow: 2px 2px 4px #000000;
+        align-self: flex-start;
+        margin-top: 30px;
+        //margin-left: 20px;
+    }
+}
+
+#map {
+    width: 400px;
+    height: 300px;
+}

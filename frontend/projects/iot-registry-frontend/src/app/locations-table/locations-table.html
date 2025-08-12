@@ -1,21 +1,26 @@
-<table>
-    <thead>
-        <tr>
-            <th>Address</th>
-            <th>Description</th>
-            <th>Latitude</th>
-            <th>Longitude</th>
+<div class="table-container">
+    @if(userManager.isLoggedIn()){
+    <button id="addLocationButton" (click)="onAddLocationClick()">Add location</button>
+    }
+    <table>
+        <thead>
+            <tr>
+                <th>Address</th>
+                <th>Description</th>
+                <th>Latitude</th>
+                <th>Longitude</th>
 
-        </tr>
-    </thead>
-    <tbody>
-        @for (location of locations; track location) {
-        <tr>
-            <td>{{location.address}}</td>
-            <td>{{location.description}}</td>
-            <td>{{location.latitude}}</td>
-            <td>{{location.longitude}}</td>
-        </tr>
-        }
-    </tbody>
-</table>
+            </tr>
+        </thead>
+        <tbody>
+            @for (location of locations; track location) {
+            <tr>
+                <td>{{location.address}}</td>
+                <td>{{location.description}}</td>
+                <td>{{location.latitude}}</td>
+                <td>{{location.longitude}}</td>
+            </tr>
+            }
+        </tbody>
+    </table>
+</div>
