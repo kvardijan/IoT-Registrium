@@ -7,7 +7,7 @@ import OLMap from 'ol/Map';
 import View from 'ol/View';
 import TileLayer from 'ol/layer/Tile';
 import OSM from 'ol/source/OSM';
-import { fromLonLat } from 'ol/proj';
+import { fromLonLat, toLonLat } from 'ol/proj';
 import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
 import Feature from 'ol/Feature';
@@ -28,7 +28,7 @@ export class AddLocation implements OnInit, AfterViewInit {
   longitude = 15.8724;
   latitude = 46.1605;
   private map!: OLMap;
-  private markerLayer?: VectorLayer;
+  private markerLayer!: VectorLayer<VectorSource>;
 
   constructor(private http: HttpClient, public userManager: UserManagerService) { }
 
@@ -50,9 +50,40 @@ export class AddLocation implements OnInit, AfterViewInit {
       }),
       controls: [],
     });
+
+    this.markerLayer = new VectorLayer({
+      source: new VectorSource(),
+      style: new Style({
+        image: new CircleStyle({
+          radius: 7,
+          fill: new Fill({ color: '#1976d2' }),
+          stroke: new Stroke({ color: '#000000ff', width: 2 })
+        })
+      })
+    });
+    this.map.addLayer(this.markerLayer);
+
+    this.map.on('singleclick', (event) => {
+      const coords = toLonLat(event.coordinate);
+      this.longitude = coords[0];
+      this.latitude = coords[1];
+
+      console.log('Coordinates:', this.longitude, this.latitude);
+
+      this.placeMarker(this.longitude, this.latitude);
+    });
+  }
+
+  private placeMarker(lon: number, lat: number) {
+    const feature = new Feature({
+      geometry: new Point(fromLonLat([lon, lat]))
+    });
+
+    this.markerLayer.getSource()?.clear();
+    this.markerLayer.getSource()?.addFeature(feature);
   }
 
   addLocation() {
-
+    console.log('Saving location:', this.address, this.latitude, this.longitude);
   }
 }
