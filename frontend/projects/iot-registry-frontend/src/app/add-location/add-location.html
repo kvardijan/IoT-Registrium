@@ -4,19 +4,16 @@
     <div id="message">{{ message }}</div>
     }
     <form (ngSubmit)="addLocation()">
-        <div class="row">
+        <div class="column">
             <div class="field">
                 <label for="address">Address: *</label>
-                <input type="text" [(ngModel)]="address" name="address" placeholder="Trg Stjepana Radića 7, 49000, Krapina"
-                    required />
+                <input type="text" [(ngModel)]="address" name="address"
+                    placeholder="Trg Stjepana Radića 7, 49000, Krapina" required />
             </div>
             <div class="field">
                 <label for="description">Description: *</label>
                 <input type="text" [(ngModel)]="description" name="description" placeholder="Kružni tok" required />
             </div>
-        </div>
-
-        <div class="row">
             <div class="field">
                 <label for="longitude">Longitude: *</label>
                 <input type="text" [(ngModel)]="longitude" name="longitude" placeholder="46.4326" readonly required />
@@ -25,9 +22,17 @@
                 <label for="latitude">Latitude: *</label>
                 <input type="text" [(ngModel)]="latitude" name="latitude" placeholder="16.4326" readonly required />
             </div>
+            <div class="field">
+                <button type="submit">Add</button>
+            </div>
         </div>
 
-        <button type="submit">Add</button>
+        <div class="column">
+            <div class="field">
+                <div id="map"></div>
+            </div>
+        </div>
+        <div class="column"></div>
     </form>
 
 </div>
