@@ -71,6 +71,42 @@ export class AddLocation implements OnInit, AfterViewInit {
       console.log('Coordinates:', this.longitude, this.latitude);
 
       this.placeMarker(this.longitude, this.latitude);
+
+      this.http.get<any>(
+        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${this.latitude}&lon=${this.longitude}&addressdetails=1`
+      ).subscribe({
+        next: (data) => {
+          this.address = '';
+          console.log('data:', data);
+          if (data && !data.error) {
+            if (data.name) {
+              this.description = data.name;
+            }
+            if (data.address.road) {
+              this.address += data.address.road + ', ';
+            }
+            if (data.address.postcode) {
+              this.address += data.address.postcode + ', ';
+            }
+            if (data.address.town) {
+              this.address += data.address.town + ', ';
+            }
+            if (data.address.village) {
+              this.address += data.address.village + ', ';
+            }
+            if (data.address.city) {
+              this.address += data.address.city + ', ';
+            }
+            this.address = this.address.substring(0, this.address.length - 2);
+          } else {
+            this.address = 'Address not found';
+          }
+        },
+        error: (err) => {
+          console.error('Error fetching address', err);
+          this.address = 'Error fetching address';
+        }
+      });
     });
   }
 
