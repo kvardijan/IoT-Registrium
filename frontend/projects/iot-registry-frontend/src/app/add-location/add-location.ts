@@ -77,6 +77,7 @@ export class AddLocation implements OnInit, AfterViewInit {
       ).subscribe({
         next: (data) => {
           this.address = '';
+          this.description = '';
           console.log('data:', data);
           if (data && !data.error) {
             if (data.name) {
@@ -120,6 +121,32 @@ export class AddLocation implements OnInit, AfterViewInit {
   }
 
   addLocation() {
-    console.log('Saving location:', this.address, this.latitude, this.longitude);
+    const jwt = this.userManager.getToken();
+    const headers = {
+      Authorization: 'Bearer ' + jwt
+    };
+    this.message = '';
+
+    const body: any = {
+      latitude: this.latitude.toString(),
+      longitude: this.longitude.toString(),
+      address: this.address,
+      description: this.description
+    };
+
+    this.http.post<{ success: boolean; data: string; error: string }>('http://localhost:5261/api/location', body, { headers })
+      .subscribe({
+        next: (response) => {
+          if (response.success) {
+            this.message = 'Location added successfully.';
+          } else {
+            this.message = 'Error with location adding: ' + response.error;
+          }
+        },
+        error: (err) => {
+          this.message = 'Error with location adding!';
+          console.log(err);
+        }
+      });
   }
 }
