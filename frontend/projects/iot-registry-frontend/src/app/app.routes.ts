@@ -7,6 +7,7 @@ import { AddDevice } from './add-device/add-device';
 import { authGuard } from './auth.guard';
 import { DeviceEvents } from './device-events/device-events';
 import { DevicesMap } from './devices-map/devices-map';
+import { AddLocation } from './add-location/add-location';
 
 export const routes: Routes = [
     { path: 'devicestable', component: DevicesTable },
@@ -14,6 +15,7 @@ export const routes: Routes = [
     { path: 'login', component: Login },
     { path: 'locations', component: LocationsTable, canActivate: [authGuard] },
     { path: 'adddevice', component: AddDevice, canActivate: [authGuard] },
+    { path: 'addlocation', component: AddLocation, canActivate: [authGuard] },
     { path: 'devices/:serialNumber/events', component: DeviceEvents, canActivate: [authGuard] },
     { path: '', component: DevicesTable },
     { path: '**', component: NotFound }
