@@ -13,6 +13,7 @@ import VectorSource from 'ol/source/Vector';
 import Feature from 'ol/Feature';
 import Point from 'ol/geom/Point';
 import { Style, Fill, Stroke, Circle as CircleStyle } from 'ol/style';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-edit-location',
@@ -21,16 +22,43 @@ import { Style, Fill, Stroke, Circle as CircleStyle } from 'ol/style';
   templateUrl: './edit-location.html',
   styleUrl: './edit-location.scss'
 })
-export class EditLocation {
+export class EditLocation implements OnInit {
+  locationId = '';
   message = '';
   address = '';
   description = '';
   longitude = 15.8724;
   latitude = 46.1605;
 
-  constructor(private http: HttpClient, public userManager: UserManagerService) { }
+  constructor(private http: HttpClient, public userManager: UserManagerService, private route: ActivatedRoute) { }
 
-  editLocation(){
+  ngOnInit(): void {
+    this.locationId = this.route.snapshot.paramMap.get('locationId') || '';
+    console.log(this.locationId);
+    this.fetchLocation();
+  }
+
+  fetchLocation() {
+    this.http.get<any>('http://localhost:5261/api/location/' + this.locationId)
+      .subscribe({
+        next: (response) => {
+          if (response.success) {
+            console.log(response.data);
+            this.address = response.data.address;
+            this.longitude = response.data.longitude;
+            this.latitude = response.data.latitude;
+            this.description = response.data.description;
+          } else {
+            console.error('Failed to fetch location:', response.error);
+          }
+        },
+        error: (err) => {
+          console.error('Error fetching location', err);
+        }
+      });
+  }
+
+  editLocation() {
 
   }
 }
