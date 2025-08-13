@@ -148,6 +148,32 @@ export class EditLocation implements OnInit, AfterViewInit {
   }
 
   editLocation() {
+    const jwt = this.userManager.getToken();
+    const headers = {
+      Authorization: 'Bearer ' + jwt
+    };
+    this.message = '';
 
+    const body: any = {
+      latitude: this.latitude.toString(),
+      longitude: this.longitude.toString(),
+      address: this.address,
+      description: this.description
+    };
+
+    this.http.patch<{ success: boolean; data: string; error: string }>('http://localhost:5261/api/location/' + this.locationId, body, { headers })
+      .subscribe({
+        next: (response) => {
+          if (response.success) {
+            this.message = 'Location edited successfully.';
+          } else {
+            this.message = 'Error with location editing: ' + response.error;
+          }
+        },
+        error: (err) => {
+          this.message = 'Error with location editing!';
+          console.log(err);
+        }
+      });
   }
 }
