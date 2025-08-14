@@ -92,9 +92,10 @@ namespace device_service
             // +++JWT CONFIG
             builder.Services.AddAuthorization();
 
+            var eventServiceUrl = builder.Configuration["EventServiceUrl"];
             builder.Services.AddHttpClient("EventService", client =>
             {
-                client.BaseAddress = new Uri("http://localhost:5282/");
+                client.BaseAddress = new Uri(eventServiceUrl);
             });
 
             var app = builder.Build();
