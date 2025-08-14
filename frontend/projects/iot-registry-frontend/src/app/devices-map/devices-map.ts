@@ -13,6 +13,7 @@ import Point from 'ol/geom/Point';
 //import { Icon, Style } from 'ol/style';
 import { Style, Fill, Stroke, Circle as CircleStyle } from 'ol/style';
 import { CommonModule } from '@angular/common';
+import { environment } from '../environments/environment';
 
 @Component({
   selector: 'app-devices-map',
@@ -81,7 +82,7 @@ export class DevicesMap implements AfterViewInit, OnInit {
   }
 
   fetchLocations(callback: () => void) {
-    this.http.get<any>('http://localhost:5261/api/location')
+    this.http.get<any>(environment.locationApi + '/api/location')
       .subscribe({
         next: (response) => {
           if (response.success) {
@@ -102,7 +103,7 @@ export class DevicesMap implements AfterViewInit, OnInit {
   }
 
   fetchDevices() {
-    this.http.get<any>('http://localhost:5208/api/device')
+    this.http.get<any>(environment.deviceApi + '/api/device')
       .subscribe({
         next: (response) => {
           if (response.success) {

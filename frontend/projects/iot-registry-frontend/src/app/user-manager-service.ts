@@ -1,5 +1,6 @@
 import { Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { environment } from './environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -8,8 +9,8 @@ export class UserManagerService {
   private tokenKey = 'jwtToken';
   isLoggedIn = signal<boolean>(this.hasToken());
   username = signal<string>(this.extractUsername());
-  
-  constructor(private http: HttpClient){}
+
+  constructor(private http: HttpClient) { }
 
   private hasToken(): boolean {
     return !!localStorage.getItem(this.tokenKey);
@@ -27,7 +28,7 @@ export class UserManagerService {
   }
 
   login(username: string, password: string) {
-    return this.http.post<{ success: boolean; data: string; error: string }>('http://localhost:5081/api/user/login', {
+    return this.http.post<{ success: boolean; data: string; error: string }>(environment.userApi + '/api/user/login', {
       username,
       password
     });
