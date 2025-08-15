@@ -1,0 +1,95 @@
+version: "3.9"
+services:
+  user-db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: iot_registry
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+    ports:
+      - "5434:5432"
+    volumes:
+      - user-db-data:/var/lib/postgresql/data
+      - ./db-init/user-db:/docker-entrypoint-initdb.d
+
+  user-service:
+    build: ./user-service
+    depends_on:
+      - user-db
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+    ports:
+      - "5004:8080"
+
+  device-db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: iot_registry
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+    volumes:
+      - device-db-data:/var/lib/postgresql/data
+      - ./db-init/device-db:/docker-entrypoint-initdb.d
+
+  device-service:
+    build: ./device-service
+    depends_on:
+      - device-db
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+    ports:
+      - "5001:8080"
+
+  event-db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: iot_registry
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+    volumes:
+      - event-db-data:/var/lib/postgresql/data
+      - ./db-init/event-db:/docker-entrypoint-initdb.d
+
+  event-service:
+    build: ./event-service
+    depends_on:
+      - event-db
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+    ports:
+      - "5002:8080"
+
+  location-db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: iot_registry
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+    volumes:
+      - location-db-data:/var/lib/postgresql/data
+      - ./db-init/location-db:/docker-entrypoint-initdb.d
+
+  location-service:
+    build: ./location-service
+    depends_on:
+      - location-db
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+    ports:
+      - "5003:8080"
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "4200:80"
+    depends_on:
+      - user-service
+      - device-service
+      - event-service
+      - location-service
+
+volumes:
+  user-db-data:
+  device-db-data:
+  event-db-data:
+  location-db-data:
