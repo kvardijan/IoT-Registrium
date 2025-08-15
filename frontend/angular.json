@@ -39,7 +39,6 @@
         "build": {
           "builder": "@angular/build:application",
           "options": {
-            "browser": "projects/iot-registry-frontend/src/main.ts",
             "polyfills": [
               "zone.js"
             ],
@@ -57,6 +56,12 @@
           },
           "configurations": {
             "production": {
+              "fileReplacements": [
+                {
+                  "replace": "projects/iot-registry-frontend/src/app/environments/environment.ts",
+                  "with": "projects/iot-registry-frontend/src/app/environments/environment.prod.ts"
+                }
+              ],
               "budgets": [
                 {
                   "type": "initial",
