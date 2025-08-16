@@ -59,10 +59,11 @@ namespace event_service
 
             builder.Services.AddScoped<EventService>();
 
+            var allowedOrigins = builder.Configuration.GetSection("AllowedOrigins").Get<string[]>();
             builder.Services.AddCors(options =>
             {
                 options.AddPolicy("AllowFrontend",
-                    builder => builder.WithOrigins("http://localhost:4200") // Angular dev server
+                    builder => builder.WithOrigins(allowedOrigins)
                                       .AllowAnyHeader()
                                       .AllowAnyMethod());
             }); // Allow CORS

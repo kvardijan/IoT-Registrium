@@ -13,6 +13,7 @@ import VectorSource from 'ol/source/Vector';
 import Feature from 'ol/Feature';
 import Point from 'ol/geom/Point';
 import { Style, Fill, Stroke, Circle as CircleStyle } from 'ol/style';
+import { environment } from '../environments/environment';
 
 @Component({
   selector: 'app-add-location',
@@ -134,7 +135,7 @@ export class AddLocation implements OnInit, AfterViewInit {
       description: this.description
     };
 
-    this.http.post<{ success: boolean; data: string; error: string }>('http://localhost:5261/api/location', body, { headers })
+    this.http.post<{ success: boolean; data: string; error: string }>(environment.locationApi, body, { headers })
       .subscribe({
         next: (response) => {
           if (response.success) {

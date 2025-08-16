@@ -14,6 +14,7 @@ import Feature from 'ol/Feature';
 import Point from 'ol/geom/Point';
 import { Style, Fill, Stroke, Circle as CircleStyle } from 'ol/style';
 import { ActivatedRoute } from '@angular/router';
+import { environment } from '../environments/environment';
 
 @Component({
   selector: 'app-edit-location',
@@ -125,7 +126,7 @@ export class EditLocation implements OnInit, AfterViewInit {
   }
 
   fetchLocation() {
-    this.http.get<any>('http://localhost:5261/api/location/' + this.locationId)
+    this.http.get<any>(environment.locationApi + this.locationId)
       .subscribe({
         next: (response) => {
           if (response.success) {
@@ -161,7 +162,7 @@ export class EditLocation implements OnInit, AfterViewInit {
       description: this.description
     };
 
-    this.http.patch<{ success: boolean; data: string; error: string }>('http://localhost:5261/api/location/' + this.locationId, body, { headers })
+    this.http.patch<{ success: boolean; data: string; error: string }>(environment.locationApi + this.locationId, body, { headers })
       .subscribe({
         next: (response) => {
           if (response.success) {

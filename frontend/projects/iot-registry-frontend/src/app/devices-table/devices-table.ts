@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { UserManagerService } from '../user-manager-service';
 import { Router, RouterModule } from '@angular/router';
+import { environment } from '../environments/environment';
 
 @Component({
   selector: 'app-devices-table',
@@ -30,7 +31,7 @@ export class DevicesTable implements OnInit {
   }
 
   fetchLocations(callback: () => void) {
-    this.http.get<any>('http://localhost:5261/api/location')
+    this.http.get<any>(environment.locationApi)
       .subscribe({
         next: (response) => {
           if (response.success) {
@@ -50,7 +51,7 @@ export class DevicesTable implements OnInit {
   }
 
   fetchDevices() {
-    this.http.get<any>('http://localhost:5208/api/device')
+    this.http.get<any>(environment.deviceApi)
       .subscribe({
         next: (response) => {
           if (response.success) {
@@ -83,10 +84,10 @@ export class DevicesTable implements OnInit {
     }
   }
 
-  onRegisterDeviceClick(){
-    if(this.userManager.isLoggedIn()){
+  onRegisterDeviceClick() {
+    if (this.userManager.isLoggedIn()) {
       this.router.navigate(['/adddevice']);
-    }else{
+    } else {
       this.router.navigate(['/login']);
     }
   }

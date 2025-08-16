@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { UserManagerService } from '../user-manager-service';
 import { Router, RouterModule } from '@angular/router';
+import { environment } from '../environments/environment';
 
 @Component({
   selector: 'app-locations-table',
@@ -23,7 +24,7 @@ export class LocationsTable implements OnInit {
   }
 
   fetchLocations() {
-    this.http.get<any>('http://localhost:5261/api/location')
+    this.http.get<any>(environment.locationApi)
       .subscribe({
         next: (response) => {
           if (response.success) {

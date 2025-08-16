@@ -5,6 +5,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { HttpClient } from '@angular/common/http';
 import { UserManagerService } from '../user-manager-service';
+import { environment } from '../environments/environment';
 
 @Component({
   selector: 'app-add-device',
@@ -40,7 +41,7 @@ export class AddDevice implements OnInit {
       Authorization: 'Bearer ' + jwt
     };
 
-    this.http.get<any>('http://localhost:5208/api/device/statuses', { headers })
+    this.http.get<any>(environment.deviceApi + '/statuses', { headers })
       .subscribe({
         next: (response) => {
           if (response.success) {
@@ -62,7 +63,7 @@ export class AddDevice implements OnInit {
       Authorization: 'Bearer ' + jwt
     };
 
-    this.http.get<any>('http://localhost:5208/api/device/types', { headers })
+    this.http.get<any>(environment.deviceApi + '/types', { headers })
       .subscribe({
         next: (response) => {
           if (response.success) {
@@ -79,7 +80,7 @@ export class AddDevice implements OnInit {
   }
 
   fetchLocations() {
-    this.http.get<any>('http://localhost:5261/api/location')
+    this.http.get<any>(environment.locationApi)
       .subscribe({
         next: (response) => {
           if (response.success) {
@@ -117,7 +118,7 @@ export class AddDevice implements OnInit {
       body.location = this.location;
     }
 
-    this.http.post<{ success: boolean; data: string; error: string }>('http://localhost:5208/api/device', body, { headers })
+    this.http.post<{ success: boolean; data: string; error: string }>(environment.deviceApi, body, { headers })
       .subscribe({
         next: (response) => {
           if (response.success) {

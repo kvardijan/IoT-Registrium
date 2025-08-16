@@ -4,6 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { DatePipe } from '@angular/common';
 import { UserManagerService } from '../user-manager-service';
 import { EditDevice } from '../edit-device/edit-device';
+import { environment } from '../environments/environment';
 @Component({
   selector: 'app-device-events',
   standalone: true,
@@ -28,7 +29,7 @@ export class DeviceEvents implements OnInit {
       Authorization: 'Bearer ' + jwt
     };
 
-    this.http.get<any>('http://localhost:5282/api/event/device/' + this.serialNumber, { headers })
+    this.http.get<any>(environment.eventApi + '/device/' + this.serialNumber, { headers })
       .subscribe({
         next: (response) => {
           if (response.success) {

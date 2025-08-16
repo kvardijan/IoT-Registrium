@@ -5,6 +5,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { ActivatedRoute } from '@angular/router';
 import { UserManagerService } from '../user-manager-service';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../environments/environment';
 
 @Component({
   selector: 'app-edit-device',
@@ -41,7 +42,7 @@ export class EditDevice implements OnInit {
   }
 
   fetchDevice() {
-    this.http.get<any>('http://localhost:5208/api/device/serial/' + this.serialNumber)
+    this.http.get<any>(environment.deviceApi + '/serial/' + this.serialNumber)
       .subscribe({
         next: (response) => {
           if (response.success) {
@@ -69,7 +70,7 @@ export class EditDevice implements OnInit {
       Authorization: 'Bearer ' + jwt
     };
 
-    this.http.get<any>('http://localhost:5208/api/device/statuses', { headers })
+    this.http.get<any>(environment.deviceApi + '/statuses', { headers })
       .subscribe({
         next: (response) => {
           if (response.success) {
@@ -91,7 +92,7 @@ export class EditDevice implements OnInit {
       Authorization: 'Bearer ' + jwt
     };
 
-    this.http.get<any>('http://localhost:5208/api/device/types', { headers })
+    this.http.get<any>(environment.deviceApi + '/types', { headers })
       .subscribe({
         next: (response) => {
           if (response.success) {
@@ -108,7 +109,7 @@ export class EditDevice implements OnInit {
   }
 
   fetchLocations() {
-    this.http.get<any>('http://localhost:5261/api/location')
+    this.http.get<any>(environment.locationApi)
       .subscribe({
         next: (response) => {
           if (response.success) {
@@ -146,7 +147,7 @@ export class EditDevice implements OnInit {
       body.location = this.location;
     }
 
-    this.http.patch<{ success: boolean; data: string; error: string }>('http://localhost:5208/api/device/' + this.id, body, { headers })
+    this.http.patch<{ success: boolean; data: string; error: string }>(environment.deviceApi + this.id, body, { headers })
       .subscribe({
         next: (response) => {
           if (response.success) {
