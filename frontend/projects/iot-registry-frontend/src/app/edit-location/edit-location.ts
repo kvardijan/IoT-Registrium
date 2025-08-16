@@ -126,7 +126,7 @@ export class EditLocation implements OnInit, AfterViewInit {
   }
 
   fetchLocation() {
-    this.http.get<any>(environment.locationApi + '/api/location/' + this.locationId)
+    this.http.get<any>(environment.locationApi + this.locationId)
       .subscribe({
         next: (response) => {
           if (response.success) {
@@ -162,7 +162,7 @@ export class EditLocation implements OnInit, AfterViewInit {
       description: this.description
     };
 
-    this.http.patch<{ success: boolean; data: string; error: string }>(environment.locationApi + '/api/location/' + this.locationId, body, { headers })
+    this.http.patch<{ success: boolean; data: string; error: string }>(environment.locationApi + this.locationId, body, { headers })
       .subscribe({
         next: (response) => {
           if (response.success) {

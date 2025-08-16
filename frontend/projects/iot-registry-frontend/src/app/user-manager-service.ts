@@ -28,7 +28,7 @@ export class UserManagerService {
   }
 
   login(username: string, password: string) {
-    return this.http.post<{ success: boolean; data: string; error: string }>(environment.userApi + '/api/user/login', {
+    return this.http.post<{ success: boolean; data: string; error: string }>(environment.userApi + '/login', {
       username,
       password
     });

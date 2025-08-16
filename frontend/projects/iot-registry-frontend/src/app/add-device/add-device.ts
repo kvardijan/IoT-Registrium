@@ -41,7 +41,7 @@ export class AddDevice implements OnInit {
       Authorization: 'Bearer ' + jwt
     };
 
-    this.http.get<any>(environment.deviceApi + '/api/device/statuses', { headers })
+    this.http.get<any>(environment.deviceApi + '/statuses', { headers })
       .subscribe({
         next: (response) => {
           if (response.success) {
@@ -63,7 +63,7 @@ export class AddDevice implements OnInit {
       Authorization: 'Bearer ' + jwt
     };
 
-    this.http.get<any>(environment.deviceApi + '/api/device/types', { headers })
+    this.http.get<any>(environment.deviceApi + '/types', { headers })
       .subscribe({
         next: (response) => {
           if (response.success) {
@@ -80,7 +80,7 @@ export class AddDevice implements OnInit {
   }
 
   fetchLocations() {
-    this.http.get<any>(environment.locationApi + '/api/location')
+    this.http.get<any>(environment.locationApi)
       .subscribe({
         next: (response) => {
           if (response.success) {
@@ -118,7 +118,7 @@ export class AddDevice implements OnInit {
       body.location = this.location;
     }
 
-    this.http.post<{ success: boolean; data: string; error: string }>(environment.deviceApi + '/api/device', body, { headers })
+    this.http.post<{ success: boolean; data: string; error: string }>(environment.deviceApi, body, { headers })
       .subscribe({
         next: (response) => {
           if (response.success) {

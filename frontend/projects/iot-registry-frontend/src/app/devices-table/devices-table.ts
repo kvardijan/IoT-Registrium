@@ -31,7 +31,7 @@ export class DevicesTable implements OnInit {
   }
 
   fetchLocations(callback: () => void) {
-    this.http.get<any>(environment.locationApi + '/api/location')
+    this.http.get<any>(environment.locationApi)
       .subscribe({
         next: (response) => {
           if (response.success) {
@@ -51,7 +51,7 @@ export class DevicesTable implements OnInit {
   }
 
   fetchDevices() {
-    this.http.get<any>(environment.deviceApi + '/api/device')
+    this.http.get<any>(environment.deviceApi)
       .subscribe({
         next: (response) => {
           if (response.success) {

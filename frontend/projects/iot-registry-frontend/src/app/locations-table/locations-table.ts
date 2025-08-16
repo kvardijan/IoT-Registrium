@@ -24,7 +24,7 @@ export class LocationsTable implements OnInit {
   }
 
   fetchLocations() {
-    this.http.get<any>(environment.locationApi + '/api/location')
+    this.http.get<any>(environment.locationApi)
       .subscribe({
         next: (response) => {
           if (response.success) {

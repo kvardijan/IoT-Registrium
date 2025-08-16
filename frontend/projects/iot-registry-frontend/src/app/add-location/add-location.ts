@@ -135,7 +135,7 @@ export class AddLocation implements OnInit, AfterViewInit {
       description: this.description
     };
 
-    this.http.post<{ success: boolean; data: string; error: string }>(environment.locationApi + '/api/location', body, { headers })
+    this.http.post<{ success: boolean; data: string; error: string }>(environment.locationApi, body, { headers })
       .subscribe({
         next: (response) => {
           if (response.success) {

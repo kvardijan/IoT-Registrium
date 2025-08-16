@@ -29,7 +29,7 @@ export class DeviceEvents implements OnInit {
       Authorization: 'Bearer ' + jwt
     };
 
-    this.http.get<any>(environment.eventApi + '/api/event/device/' + this.serialNumber, { headers })
+    this.http.get<any>(environment.eventApi + '/device/' + this.serialNumber, { headers })
       .subscribe({
         next: (response) => {
           if (response.success) {
