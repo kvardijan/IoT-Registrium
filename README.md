@@ -29,6 +29,7 @@ Subsequent launches can be done with:
 docker compose up
 ```
 After all containers are launched successfully, the application can be accessed through: http://localhost:4200
+
 To shutdown the application, run the following command:
 ```
 docker compose down
