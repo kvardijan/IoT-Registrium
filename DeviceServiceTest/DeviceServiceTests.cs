@@ -28,7 +28,7 @@ namespace DeviceServiceTest
         public async Task RegisterDevice_ShouldSaveAndCallEventService()
         {
             var context = GetDbContext("RegisterDeviceDb");
-            var eventServiceMock = new Mock<EventCreationService>();
+            var eventServiceMock = new Mock<IEventCreationService>();
 
             var service = new DeviceService(context, eventServiceMock.Object);
 

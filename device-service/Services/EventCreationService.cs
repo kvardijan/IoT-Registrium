@@ -5,7 +5,17 @@ using System.Text.Json;
 
 namespace device_service.Services
 {
-    public class EventCreationService
+    public interface IEventCreationService
+    {
+        Task CreateDeviceAddedEventAsync(Device newDevice, string jwtToken);
+        Task CreateDeviceInfoUpdatedEventAsync(Device oldDevice, Device newDevice, string jwtToken);
+        Task CreateDeviceStatusChangeEventAsync(string device, string oldStatus, string newStatus, string jwtToken);
+        Task CreateDeviceDataRecordingEventAsync(string device, DeviceDataDto data, string jwtToken);
+        Task CreateDeviceSentCommandEventAsync(string device, DeviceCommandDto command, string jwtToken);
+        Task CreateDeviceFirmwareChangeEventAsync(string device, string oldFirmwareVersion, string newFirmwareVersion, string jwtToken);
+    }
+
+    public class EventCreationService : IEventCreationService
     {
 
         private readonly HttpClient _httpClient;
