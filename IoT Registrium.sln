@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "event-service", "event-serv
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "statistic-service", "statistic-service\statistic-service.csproj", "{59096377-ED93-4486-81D1-C4CE63432E9C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeviceServiceTest", "DeviceServiceTest\DeviceServiceTest.csproj", "{757908C3-9D6A-4CF7-A7FA-52E5F8C94DC6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{59096377-ED93-4486-81D1-C4CE63432E9C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{59096377-ED93-4486-81D1-C4CE63432E9C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{59096377-ED93-4486-81D1-C4CE63432E9C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{757908C3-9D6A-4CF7-A7FA-52E5F8C94DC6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{757908C3-9D6A-4CF7-A7FA-52E5F8C94DC6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{757908C3-9D6A-4CF7-A7FA-52E5F8C94DC6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{757908C3-9D6A-4CF7-A7FA-52E5F8C94DC6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
