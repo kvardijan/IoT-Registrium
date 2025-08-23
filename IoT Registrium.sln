@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeviceServiceTest", "Device
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventServiceTest", "EventServiceTest\EventServiceTest.csproj", "{FEB91E83-2E86-4326-9487-33325440D399}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LocationServiceTest", "LocationServiceTest\LocationServiceTest.csproj", "{9FA1F9AF-349E-426E-B32C-CB3D6C96A75E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +53,10 @@ Global
 		{FEB91E83-2E86-4326-9487-33325440D399}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FEB91E83-2E86-4326-9487-33325440D399}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FEB91E83-2E86-4326-9487-33325440D399}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9FA1F9AF-349E-426E-B32C-CB3D6C96A75E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9FA1F9AF-349E-426E-B32C-CB3D6C96A75E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9FA1F9AF-349E-426E-B32C-CB3D6C96A75E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9FA1F9AF-349E-426E-B32C-CB3D6C96A75E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
