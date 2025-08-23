@@ -120,5 +120,49 @@ namespace location_service.Tests
 
             Assert.Null(result);
         }
+
+        [Fact]
+        public void UpdateLocation_ShouldNotOverwriteFields_WhenEmptyStringsProvided()
+        {
+            var context = GetDbContext("UpdateLocationEmptyDb");
+            var service = new LocationService(context);
+
+            var dto = new LocationUpdateDto
+            {
+                Latitude = "",
+                Longitude = "",
+                Address = "",
+                Description = ""
+            };
+
+            var original = context.Locations.First();
+            var result = service.UpdateLocation(1, dto);
+
+            Assert.NotNull(result);
+            Assert.Equal(original.Latitude, result.Latitude);
+            Assert.Equal(original.Longitude, result.Longitude);
+            Assert.Equal(original.Address, result.Address);
+            Assert.Equal(original.Description, result.Description);
+        }
+
+        [Fact]
+        public void UpdateLocation_ShouldUpdateOnlySpecifiedFields()
+        {
+            var context = GetDbContext("UpdateLocationPartialDb");
+            var service = new LocationService(context);
+
+            var dto = new LocationUpdateDto
+            {
+                Address = "nova adresa"
+            };
+
+            var result = service.UpdateLocation(1, dto);
+
+            Assert.NotNull(result);
+            Assert.Equal("nova adresa", result.Address);
+            Assert.Equal("10.000", result.Latitude);
+            Assert.Equal("20.000", result.Longitude);
+            Assert.Equal("University", result.Description);
+        }
     }
 }
