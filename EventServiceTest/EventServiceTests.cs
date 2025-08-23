@@ -127,5 +127,92 @@ namespace EventServiceTests
 
             Assert.Throws<Exception>(() => service.CreateEvent(dto));
         }
+
+        [Fact]
+        public void GetEvents_ShouldReturnEmptyList_WhenNoEventsExist()
+        {
+            var context = GetDbContext("EmptyEventsDb");
+            var service = new EventService(context);
+
+            var result = service.GetEvents();
+
+            Assert.NotNull(result);
+            Assert.Empty(result);
+        }
+
+        [Fact]
+        public void GetEventsOfDevice_ShouldReturnEmptyList_WhenNoEventsForDevice()
+        {
+            var context = GetDbContext("NoEventsForDeviceDb");
+            context.Events.Add(new Event { Device = "SN1", Type = 1, Data = "data" });
+            context.SaveChanges();
+
+            var service = new EventService(context);
+
+            var result = service.GetEventsOfDevice("SN999");
+
+            Assert.NotNull(result);
+            Assert.Empty(result);
+        }
+
+        [Fact]
+        public void CreateEvent_ShouldSetTimestamp()
+        {
+            var context = GetDbContext("CreateEventTimestampDb");
+            var service = new EventService(context);
+
+            var dto = new EventCreationDto { Device = "SN777", Type = 1, Data = "data" };
+            var response = service.CreateEvent(dto);
+
+            Assert.True(response.Timestamp <= DateTime.UtcNow && response.Timestamp >= DateTime.UtcNow.AddSeconds(-5));
+        }
+
+        [Fact]
+        public void CreateEvent_ShouldReturnCorrectTypeDescription()
+        {
+            var context = GetDbContext("CreateEventTypeDescDb");
+            context.Types.Add(new event_service.Models.Type { Id = 2, Description = "device removed" });
+            context.SaveChanges();
+
+            var service = new EventService(context);
+            var dto = new EventCreationDto { Device = "SN888", Type = 2, Data = "removed" };
+
+            var response = service.CreateEvent(dto);
+
+            Assert.Equal("device removed", response.Type);
+        }
+
+        [Fact]
+        public void GetEventById_ShouldReturnTypeDescription_FromNavigationProperty()
+        {
+            var context = GetDbContext("GetEventByIdTypeNavDb");
+            context.Types.Add(new event_service.Models.Type { Id = 3, Description = "custom type" });
+            context.Events.Add(new Event { Device = "SN333", Type = 3, Data = "custom" });
+            context.SaveChanges();
+
+            var service = new EventService(context);
+
+            var result = service.GetEventById(1);
+
+            Assert.NotNull(result);
+            Assert.Equal("custom type", result.Type);
+        }
+
+        [Fact]
+        public void GetEvents_ShouldMapAllFieldsCorrectly()
+        {
+            var context = GetDbContext("GetEventsMappingDb");
+            var evt = new Event { Device = "SN101", Type = 1, Data = "xyz" };
+            context.Events.Add(evt);
+            context.SaveChanges();
+
+            var service = new EventService(context);
+            var result = service.GetEvents().First();
+
+            Assert.Equal(evt.Device, result.Device);
+            Assert.Equal(evt.Type, result.TypeId);
+            Assert.Equal(evt.Data, result.Data);
+            Assert.Equal(evt.Timestamp, result.Timestamp);
+        }
     }
 }
