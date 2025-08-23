@@ -131,13 +131,13 @@ public class EventCreationServiceTests
             .Callback<HttpRequestMessage, CancellationToken>((req, _) => sentRequest = req)
             .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK));
 
-        await service.CreateDeviceStatusChangeEventAsync("SN999", "offline", "online", "jwt-token");
+        await service.CreateDeviceStatusChangeEventAsync("SN999", "idle", "active", "jwt-token");
 
         Assert.NotNull(sentRequest);
         VerifyEvent(sentRequest!, 2, "SN999", data =>
         {
-            Assert.Equal("offline", data.GetProperty("oldStatus").GetString());
-            Assert.Equal("online", data.GetProperty("newStatus").GetString());
+            Assert.Equal("idle", data.GetProperty("oldStatus").GetString());
+            Assert.Equal("active", data.GetProperty("newStatus").GetString());
         });
     }
 
@@ -175,13 +175,13 @@ public class EventCreationServiceTests
             .Callback<HttpRequestMessage, CancellationToken>((req, _) => sentRequest = req)
             .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK));
 
-        var cmd = new DeviceCommandDto { Command = "reboot" };
+        var cmd = new DeviceCommandDto { Command = "RESTART" };
         await service.CreateDeviceSentCommandEventAsync("SN777", cmd, "jwt-token");
 
         Assert.NotNull(sentRequest);
         VerifyEvent(sentRequest!, 3, "SN777", data =>
         {
-            Assert.Equal("reboot", data.GetProperty("Command").GetString());
+            Assert.Equal("RESTART", data.GetProperty("Command").GetString());
         });
     }
 

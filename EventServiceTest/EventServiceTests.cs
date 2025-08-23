@@ -171,15 +171,15 @@ namespace EventServiceTests
         public void CreateEvent_ShouldReturnCorrectTypeDescription()
         {
             var context = GetDbContext("CreateEventTypeDescDb");
-            context.Types.Add(new event_service.Models.Type { Id = 2, Description = "device removed" });
+            context.Types.Add(new event_service.Models.Type { Id = 2, Description = "device updated" });
             context.SaveChanges();
 
             var service = new EventService(context);
-            var dto = new EventCreationDto { Device = "SN888", Type = 2, Data = "removed" };
+            var dto = new EventCreationDto { Device = "SN888", Type = 2, Data = "updated data" };
 
             var response = service.CreateEvent(dto);
 
-            Assert.Equal("device removed", response.Type);
+            Assert.Equal("device updated", response.Type);
         }
 
         [Fact]

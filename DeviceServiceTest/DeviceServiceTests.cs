@@ -24,7 +24,7 @@ public class DeviceServiceTests
     public async Task RegisterDevice_ShouldSaveAndCallEventService()
     {
         var context = GetDbContext(nameof(RegisterDevice_ShouldSaveAndCallEventService));
-        context.Types.Add(new device_service.Models.Type { Id = 1, Description = "Sensor" });
+        context.Types.Add(new device_service.Models.Type { Id = 1, Description = "temperature sensor" });
         context.Statuses.Add(new Status { Id = 1, Description = "Active" });
         context.SaveChanges();
 
@@ -34,8 +34,8 @@ public class DeviceServiceTests
         var dto = new DeviceRegistrationDto
         {
             SerialNumber = "SN123",
-            Model = "X100",
-            Manufacturer = "Acme",
+            Model = "SUPERmodel",
+            Manufacturer = "makufakturer",
             Type = 1,
             Status = 1,
             FirmwareVersion = "1.0.0",
@@ -61,7 +61,7 @@ public class DeviceServiceTests
     public void GetDeviceById_ShouldReturnDevice_WhenExists()
     {
         var context = GetDbContext(nameof(GetDeviceById_ShouldReturnDevice_WhenExists));
-        var type = new device_service.Models.Type { Id = 1, Description = "Sensor" };
+        var type = new device_service.Models.Type { Id = 1, Description = "temperature sensor" };
         var status = new Status { Id = 1, Description = "Active" };
         context.Types.Add(type);
         context.Statuses.Add(status);
@@ -69,11 +69,11 @@ public class DeviceServiceTests
         var device = new Device
         {
             SerialNumber = "SN001",
-            Model = "M1",
-            Manufacturer = "TestCo",
+            Model = "MODELm",
+            Manufacturer = "makufakturer",
             Type = type.Id,
             Status = status.Id,
-            FirmwareVersion = "v1",
+            FirmwareVersion = "1.0.0",
             Location = 1,
             LastSeen = DateTime.UtcNow,
             TypeNavigation = type,
@@ -93,7 +93,7 @@ public class DeviceServiceTests
     public void GetDeviceBySerialNumber_ShouldReturnDevice_WhenExists()
     {
         var context = GetDbContext(nameof(GetDeviceBySerialNumber_ShouldReturnDevice_WhenExists));
-        var type = new device_service.Models.Type { Id = 1, Description = "Sensor" };
+        var type = new device_service.Models.Type { Id = 1, Description = "temperature sensor" };
         var status = new Status { Id = 1, Description = "Active" };
         context.Types.Add(type);
         context.Statuses.Add(status);
@@ -101,11 +101,11 @@ public class DeviceServiceTests
         var device = new Device
         {
             SerialNumber = "SN002",
-            Model = "M2",
-            Manufacturer = "TestCo",
+            Model = "MODELn",
+            Manufacturer = "makufakturer",
             Type = type.Id,
             Status = status.Id,
-            FirmwareVersion = "v1",
+            FirmwareVersion = "1.0.0",
             Location = 2,
             LastSeen = DateTime.UtcNow,
             TypeNavigation = type,
@@ -125,7 +125,7 @@ public class DeviceServiceTests
     public async Task UpdateDevice_ShouldModifyAndCallEventService()
     {
         var context = GetDbContext(nameof(UpdateDevice_ShouldModifyAndCallEventService));
-        var type = new device_service.Models.Type { Id = 1, Description = "Sensor" };
+        var type = new device_service.Models.Type { Id = 1, Description = "temperature sensor" };
         var status = new Status { Id = 1, Description = "Active" };
         context.Types.Add(type);
         context.Statuses.Add(status);
@@ -133,11 +133,11 @@ public class DeviceServiceTests
         var device = new Device
         {
             SerialNumber = "SN003",
-            Model = "Old",
-            Manufacturer = "OldCo",
+            Model = "TTTmmm",
+            Manufacturer = "makufakturer",
             Type = type.Id,
             Status = status.Id,
-            FirmwareVersion = "v1",
+            FirmwareVersion = "1.0.0",
             Location = 3,
             LastSeen = DateTime.UtcNow,
             TypeNavigation = type,
@@ -166,9 +166,9 @@ public class DeviceServiceTests
     public async Task UpdateDeviceStatus_ShouldChangeStatusAndCallEventService()
     {
         var context = GetDbContext(nameof(UpdateDeviceStatus_ShouldChangeStatusAndCallEventService));
-        var type = new device_service.Models.Type { Id = 1, Description = "Sensor" };
+        var type = new device_service.Models.Type { Id = 1, Description = "temperature sensor" };
         var status1 = new Status { Id = 1, Description = "Active" };
-        var status2 = new Status { Id = 2, Description = "Inactive" };
+        var status2 = new Status { Id = 2, Description = "Idle" };
         context.Types.Add(type);
         context.Statuses.AddRange(status1, status2);
 
@@ -176,10 +176,10 @@ public class DeviceServiceTests
         {
             SerialNumber = "SN004",
             Model = "M",
-            Manufacturer = "Co",
+            Manufacturer = "m",
             Type = type.Id,
             Status = status1.Id,
-            FirmwareVersion = "v1",
+            FirmwareVersion = "1.0.0",
             Location = 4,
             LastSeen = DateTime.UtcNow,
             TypeNavigation = type,
@@ -196,10 +196,10 @@ public class DeviceServiceTests
         var result = await service.UpdateDeviceStatus(device.Id, dto, "jwt");
 
         Assert.NotNull(result);
-        Assert.Equal("Inactive", result.Status);
+        Assert.Equal("Idle", result.Status);
 
         eventServiceMock.Verify(
-            es => es.CreateDeviceStatusChangeEventAsync("SN004", "Active", "Inactive", "jwt"),
+            es => es.CreateDeviceStatusChangeEventAsync("SN004", "Active", "Idle", "jwt"),
             Times.Once
         );
     }
@@ -208,7 +208,7 @@ public class DeviceServiceTests
     public async Task StoreDeviceData_ShouldCallEventService()
     {
         var context = GetDbContext(nameof(StoreDeviceData_ShouldCallEventService));
-        var type = new device_service.Models.Type { Id = 1, Description = "Sensor" };
+        var type = new device_service.Models.Type { Id = 1, Description = "temperature sensor" };
         var status = new Status { Id = 1, Description = "Active" };
         context.Types.Add(type);
         context.Statuses.Add(status);
@@ -220,7 +220,7 @@ public class DeviceServiceTests
             Manufacturer = "Co",
             Type = type.Id,
             Status = status.Id,
-            FirmwareVersion = "v1",
+            FirmwareVersion = "1.0.0",
             Location = 5,
             LastSeen = DateTime.UtcNow,
             TypeNavigation = type,
@@ -248,7 +248,7 @@ public class DeviceServiceTests
     public async Task SendCommandToDevice_ShouldCallEventService()
     {
         var context = GetDbContext(nameof(SendCommandToDevice_ShouldCallEventService));
-        var type = new device_service.Models.Type { Id = 1, Description = "Sensor" };
+        var type = new device_service.Models.Type { Id = 1, Description = "temperature sensor" };
         var status = new Status { Id = 1, Description = "Active" };
         context.Types.Add(type);
         context.Statuses.Add(status);
@@ -260,7 +260,7 @@ public class DeviceServiceTests
             Manufacturer = "Co",
             Type = type.Id,
             Status = status.Id,
-            FirmwareVersion = "v1",
+            FirmwareVersion = "1.0.0",
             Location = 6,
             LastSeen = DateTime.UtcNow,
             TypeNavigation = type,
@@ -288,7 +288,7 @@ public class DeviceServiceTests
     public async Task UpdateDeviceFirmware_ShouldChangeFirmwareAndCallEventService()
     {
         var context = GetDbContext(nameof(UpdateDeviceFirmware_ShouldChangeFirmwareAndCallEventService));
-        var type = new device_service.Models.Type { Id = 1, Description = "Sensor" };
+        var type = new device_service.Models.Type { Id = 1, Description = "temperature sensor" };
         var status = new Status { Id = 1, Description = "Active" };
         context.Types.Add(type);
         context.Statuses.Add(status);
@@ -300,7 +300,7 @@ public class DeviceServiceTests
             Manufacturer = "Co",
             Type = type.Id,
             Status = status.Id,
-            FirmwareVersion = "v1",
+            FirmwareVersion = "1.0.0",
             Location = 7,
             LastSeen = DateTime.UtcNow,
             TypeNavigation = type,
@@ -312,15 +312,15 @@ public class DeviceServiceTests
         var eventServiceMock = new Mock<IEventCreationService>();
         var service = new DeviceService(context, eventServiceMock.Object);
 
-        var dto = new DeviceUpdateDto { FirmwareVersion = "v2" };
+        var dto = new DeviceUpdateDto { FirmwareVersion = "2.0.0" };
 
         var result = await service.UpdateDeviceFirmware(device.Id, dto, "jwt");
 
         Assert.NotNull(result);
-        Assert.Equal("v2", result.FirmwareVersion);
+        Assert.Equal("2.0.0", result.FirmwareVersion);
 
         eventServiceMock.Verify(
-            es => es.CreateDeviceFirmwareChangeEventAsync("SN007", "v1", "v2", "jwt"),
+            es => es.CreateDeviceFirmwareChangeEventAsync("SN007", "1.0.0", "2.0.0", "jwt"),
             Times.Once
         );
     }
@@ -329,7 +329,7 @@ public class DeviceServiceTests
     public void GetDevices_ShouldReturnList()
     {
         var context = GetDbContext(nameof(GetDevices_ShouldReturnList));
-        var type = new device_service.Models.Type { Id = 1, Description = "Sensor" };
+        var type = new device_service.Models.Type { Id = 1, Description = "temperature sensor" };
         var status = new Status { Id = 1, Description = "Active" };
         context.Types.Add(type);
         context.Statuses.Add(status);
@@ -341,7 +341,7 @@ public class DeviceServiceTests
             Manufacturer = "Co",
             Type = type.Id,
             Status = status.Id,
-            FirmwareVersion = "v1",
+            FirmwareVersion = "1.0.0",
             Location = 7,
             LastSeen = DateTime.UtcNow,
             TypeNavigation = type,
@@ -361,7 +361,7 @@ public class DeviceServiceTests
     public void GetStatuses_ShouldReturnSeeded()
     {
         var context = GetDbContext(nameof(GetStatuses_ShouldReturnSeeded));
-        var type = new device_service.Models.Type { Id = 1, Description = "Sensor" };
+        var type = new device_service.Models.Type { Id = 1, Description = "temperature sensor" };
         var status = new Status { Id = 1, Description = "Active" };
         context.Types.Add(type);
         context.Statuses.Add(status);
@@ -373,7 +373,7 @@ public class DeviceServiceTests
             Manufacturer = "Co",
             Type = type.Id,
             Status = status.Id,
-            FirmwareVersion = "v1",
+            FirmwareVersion = "1.0.0",
             Location = 7,
             LastSeen = DateTime.UtcNow,
             TypeNavigation = type,
@@ -393,7 +393,7 @@ public class DeviceServiceTests
     public void GetTypes_ShouldReturnSeeded()
     {
         var context = GetDbContext(nameof(GetTypes_ShouldReturnSeeded));
-        var type = new device_service.Models.Type { Id = 1, Description = "Sensor" };
+        var type = new device_service.Models.Type { Id = 1, Description = "temperature sensor" };
         var status = new Status { Id = 1, Description = "Active" };
         context.Types.Add(type);
         context.Statuses.Add(status);
@@ -405,7 +405,7 @@ public class DeviceServiceTests
             Manufacturer = "Co",
             Type = type.Id,
             Status = status.Id,
-            FirmwareVersion = "v1",
+            FirmwareVersion = "1.0.0",
             Location = 7,
             LastSeen = DateTime.UtcNow,
             TypeNavigation = type,
@@ -418,7 +418,7 @@ public class DeviceServiceTests
         var types = service.GetTypes();
 
         Assert.Single(types);
-        Assert.Equal("Sensor", types[0].Description);
+        Assert.Equal("temperature sensor", types[0].Description);
     }
 
     [Fact]
@@ -446,7 +446,7 @@ public class DeviceServiceTests
     public async Task RegisterDevice_ShouldThrow_WhenStatusNotFound()
     {
         var context = GetDbContext(nameof(RegisterDevice_ShouldThrow_WhenStatusNotFound));
-        context.Types.Add(new device_service.Models.Type { Id = 1, Description = "Sensor" });
+        context.Types.Add(new device_service.Models.Type { Id = 1, Description = "temperature sensor" });
         context.SaveChanges();
 
         var eventServiceMock = new Mock<IEventCreationService>();
@@ -504,18 +504,18 @@ public class DeviceServiceTests
     public async Task UpdateDevice_ShouldUpdatePartial_WhenSomeFieldsNull()
     {
         var context = GetDbContext(nameof(UpdateDevice_ShouldUpdatePartial_WhenSomeFieldsNull));
-        var type = new device_service.Models.Type { Id = 1, Description = "Sensor" };
+        var type = new device_service.Models.Type { Id = 1, Description = "temperature sensor" };
         var status = new Status { Id = 1, Description = "Active" };
         context.Types.Add(type);
         context.Statuses.Add(status);
         var device = new Device
         {
             SerialNumber = "SN200",
-            Model = "Old",
-            Manufacturer = "OldCo",
+            Model = "stariModel",
+            Manufacturer = "komp",
             Type = type.Id,
             Status = status.Id,
-            FirmwareVersion = "v1",
+            FirmwareVersion = "1.0.0",
             Location = 1,
             LastSeen = DateTime.UtcNow,
             TypeNavigation = type,
@@ -527,12 +527,12 @@ public class DeviceServiceTests
         var eventServiceMock = new Mock<IEventCreationService>();
         var service = new DeviceService(context, eventServiceMock.Object);
 
-        var dto = new DeviceUpdateDto { Model = "UpdatedModel" };
+        var dto = new DeviceUpdateDto { Model = "noviModel" };
 
         var result = await service.UpdateDevice(device.Id, dto, "jwt");
 
-        Assert.Equal("UpdatedModel", result.Model);
-        Assert.Equal("OldCo", result.Manufacturer);
+        Assert.Equal("noviModel", result.Model);
+        Assert.Equal("komp", result.Manufacturer);
     }
 
     [Fact]
@@ -607,7 +607,7 @@ public class DeviceServiceTests
     public async Task UpdateDeviceFirmware_ShouldReturnNull_WhenFirmwareVersionNotProvided()
     {
         var context = GetDbContext(nameof(UpdateDeviceFirmware_ShouldReturnNull_WhenFirmwareVersionNotProvided));
-        var type = new device_service.Models.Type { Id = 1, Description = "Sensor" };
+        var type = new device_service.Models.Type { Id = 1, Description = "temperature sensor" };
         var status = new Status { Id = 1, Description = "Active" };
         context.Types.Add(type);
         context.Statuses.Add(status);
@@ -618,7 +618,7 @@ public class DeviceServiceTests
             Manufacturer = "Co",
             Type = type.Id,
             Status = status.Id,
-            FirmwareVersion = "v1",
+            FirmwareVersion = "1.0.0",
             Location = 1,
             LastSeen = DateTime.UtcNow,
             TypeNavigation = type,
@@ -675,18 +675,18 @@ public class DeviceServiceTests
     public async Task UpdateDevice_ShouldNotOverwriteWithEmptyStrings()
     {
         var context = GetDbContext(nameof(UpdateDevice_ShouldNotOverwriteWithEmptyStrings));
-        var type = new device_service.Models.Type { Id = 1, Description = "Sensor" };
+        var type = new device_service.Models.Type { Id = 1, Description = "temperature sensor" };
         var status = new Status { Id = 1, Description = "Active" };
         context.Types.Add(type);
         context.Statuses.Add(status);
         var device = new Device
         {
             SerialNumber = "SN500",
-            Model = "Initial",
-            Manufacturer = "Maker",
+            Model = "M",
+            Manufacturer = "manufakturer",
             Type = type.Id,
             Status = status.Id,
-            FirmwareVersion = "v1",
+            FirmwareVersion = "1.0.0",
             Location = 1,
             LastSeen = DateTime.UtcNow,
             TypeNavigation = type,
@@ -701,7 +701,7 @@ public class DeviceServiceTests
 
         var result = await service.UpdateDevice(device.Id, dto, "jwt");
 
-        Assert.Equal("Initial", result.Model);
+        Assert.Equal("M", result.Model);
     }
 
 }
