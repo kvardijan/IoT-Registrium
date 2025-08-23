@@ -1,6 +1,6 @@
+Ôªøusing location_service.DTOs;
 using location_service.Models;
 using location_service.Services;
-using location_service.DTOs;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
 using System.Linq;
@@ -9,21 +9,22 @@ namespace location_service.Tests
 {
     public class LocationServiceTests
     {
-        private LocationsDbContext GetDbContext(string dbName)
+        private LocationsDbContext GetDbContext(string dbName, bool seed = true)
         {
             var options = new DbContextOptionsBuilder<LocationsDbContext>()
                 .UseInMemoryDatabase(databaseName: dbName)
                 .Options;
+
             var context = new LocationsDbContext(options);
 
-            if (!context.Locations.Any())
+            if (seed && !context.Locations.Any())
             {
                 context.Locations.Add(new Location
                 {
                     Id = 1,
                     Latitude = "10.000",
                     Longitude = "20.000",
-                    Address = "Pavlinska 2, HR 42000 Varaûdin",
+                    Address = "Pavlinska 2, HR 42000 Vara≈ædin",
                     Description = "University"
                 });
                 context.SaveChanges();
@@ -53,7 +54,7 @@ namespace location_service.Tests
             var location = service.GetLocationById(1);
 
             Assert.NotNull(location);
-            Assert.Equal("Pavlinska 2, HR 42000 Varaûdin", location.Address);
+            Assert.Equal("Pavlinska 2, HR 42000 Vara≈ædin", location.Address);
         }
 
         [Fact]
@@ -70,7 +71,7 @@ namespace location_service.Tests
         [Fact]
         public void CreateLocation_ShouldAddNewLocation()
         {
-            var context = GetDbContext("CreateLocationDb");
+            var context = GetDbContext("CreateLocationDb", seed: false);
             var service = new LocationService(context);
 
             var dto = new LocationCreationDto
@@ -85,19 +86,26 @@ namespace location_service.Tests
 
             Assert.NotNull(result);
             Assert.Equal("nova adresa 1, Negdje", result.Address);
-            Assert.Equal(2, context.Locations.Count());
+            Assert.Equal(1, context.Locations.Count());
         }
 
         [Fact]
         public void UpdateLocation_ShouldUpdateExistingLocation()
         {
-            var context = GetDbContext("UpdateLocationDb");
+            var context = GetDbContext("UpdateLocationDb", seed: false);
+            context.Locations.Add(new Location
+            {
+                Id = 1,
+                Latitude = "10.000",
+                Longitude = "20.000",
+                Address = "Old Address",
+                Description = "Old Desc"
+            });
+            context.SaveChanges();
+
             var service = new LocationService(context);
 
-            var dto = new LocationUpdateDto
-            {
-                Address = "promjenjena 12"
-            };
+            var dto = new LocationUpdateDto { Address = "promjenjena 12" };
 
             var result = service.UpdateLocation(1, dto);
 
@@ -108,13 +116,10 @@ namespace location_service.Tests
         [Fact]
         public void UpdateLocation_ShouldReturnNull_WhenLocationNotFound()
         {
-            var context = GetDbContext("UpdateLocationNotFoundDb");
+            var context = GetDbContext("UpdateLocationNotFoundDb", seed: false);
             var service = new LocationService(context);
 
-            var dto = new LocationUpdateDto
-            {
-                Address = "ulica ne postoji"
-            };
+            var dto = new LocationUpdateDto { Address = "ulica ne postoji" };
 
             var result = service.UpdateLocation(999, dto);
 
@@ -124,7 +129,17 @@ namespace location_service.Tests
         [Fact]
         public void UpdateLocation_ShouldNotOverwriteFields_WhenEmptyStringsProvided()
         {
-            var context = GetDbContext("UpdateLocationEmptyDb");
+            var context = GetDbContext("UpdateLocationEmptyDb", seed: false);
+            context.Locations.Add(new Location
+            {
+                Id = 1,
+                Latitude = "10.000",
+                Longitude = "20.000",
+                Address = "Old Address",
+                Description = "Old Desc"
+            });
+            context.SaveChanges();
+
             var service = new LocationService(context);
 
             var dto = new LocationUpdateDto
@@ -148,13 +163,20 @@ namespace location_service.Tests
         [Fact]
         public void UpdateLocation_ShouldUpdateOnlySpecifiedFields()
         {
-            var context = GetDbContext("UpdateLocationPartialDb");
+            var context = GetDbContext("UpdateLocationPartialDb", seed: false);
+            context.Locations.Add(new Location
+            {
+                Id = 1,
+                Latitude = "10.000",
+                Longitude = "20.000",
+                Address = "Old Address",
+                Description = "University"
+            });
+            context.SaveChanges();
+
             var service = new LocationService(context);
 
-            var dto = new LocationUpdateDto
-            {
-                Address = "nova adresa"
-            };
+            var dto = new LocationUpdateDto { Address = "nova adresa" };
 
             var result = service.UpdateLocation(1, dto);
 
@@ -163,6 +185,108 @@ namespace location_service.Tests
             Assert.Equal("10.000", result.Latitude);
             Assert.Equal("20.000", result.Longitude);
             Assert.Equal("University", result.Description);
+        }
+
+        [Fact]
+        public void CreateLocation_ShouldMapAllFieldsCorrectly()
+        {
+            var context = GetDbContext("CreateLocationMappingDb", seed: false);
+            var service = new LocationService(context);
+
+            var dto = new LocationCreationDto
+            {
+                Latitude = "50.123",
+                Longitude = "15.456",
+                Address = "Test Address",
+                Description = "Test Desc"
+            };
+
+            var result = service.CreateLocation(dto);
+
+            Assert.NotNull(result);
+            Assert.Equal("50.123", result.Latitude);
+            Assert.Equal("15.456", result.Longitude);
+            Assert.Equal("Test Address", result.Address);
+            Assert.Equal("Test Desc", result.Description);
+        }
+
+        [Fact]
+        public void GetLocations_ShouldReturnEmptyList_WhenNoLocations()
+        {
+            var context = GetDbContext("EmptyLocationsDb", seed: false);
+            var service = new LocationService(context);
+
+            var result = service.GetLocations();
+
+            Assert.NotNull(result);
+            Assert.Empty(result);
+        }
+
+        [Fact]
+        public void UpdateLocation_ShouldNotChangeFields_WhenDtoHasNulls()
+        {
+            var context = GetDbContext("UpdateNullFieldsDb", seed: false);
+            context.Locations.Add(new Location
+            {
+                Id = 1,
+                Latitude = "10.000",
+                Longitude = "20.000",
+                Address = "Old Address",
+                Description = "Old Desc"
+            });
+            context.SaveChanges();
+
+            var service = new LocationService(context);
+
+            var dto = new LocationUpdateDto
+            {
+                Latitude = null,
+                Longitude = null,
+                Address = null,
+                Description = null
+            };
+
+            var original = context.Locations.First();
+            var result = service.UpdateLocation(1, dto);
+
+            Assert.NotNull(result);
+            Assert.Equal(original.Latitude, result.Latitude);
+            Assert.Equal(original.Longitude, result.Longitude);
+            Assert.Equal(original.Address, result.Address);
+            Assert.Equal(original.Description, result.Description);
+        }
+
+        [Fact]
+        public void UpdateLocation_ShouldUpdateMultipleFields()
+        {
+            var context = GetDbContext("UpdateMultipleFieldsDb", seed: false);
+            context.Locations.Add(new Location
+            {
+                Id = 1,
+                Latitude = "10.000",
+                Longitude = "20.000",
+                Address = "Old Address",
+                Description = "Old Desc"
+            });
+            context.SaveChanges();
+
+            var service = new LocationService(context);
+
+            var dto = new LocationUpdateDto
+            {
+                Latitude = "11.111",
+                Longitude = "22.222",
+                Address = "New Address",
+                Description = "New Desc"
+            };
+
+            var result = service.UpdateLocation(1, dto);
+
+            Assert.NotNull(result);
+            Assert.Equal("11.111", result.Latitude);
+            Assert.Equal("22.222", result.Longitude);
+            Assert.Equal("New Address", result.Address);
+            Assert.Equal("New Desc", result.Description);
         }
     }
 }
