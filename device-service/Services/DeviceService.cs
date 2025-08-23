@@ -10,9 +10,9 @@ namespace device_service.Services
     public class DeviceService
     {
         private readonly DevicesDbContext _context;
-        private readonly EventCreationService _eventCreationService;
+        private readonly IEventCreationService _eventCreationService;
 
-        public DeviceService(DevicesDbContext context, EventCreationService eventCreationService)
+        public DeviceService(DevicesDbContext context, IEventCreationService eventCreationService)
         {
             _context = context;
             _eventCreationService = eventCreationService;
