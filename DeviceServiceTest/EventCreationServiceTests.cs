@@ -12,9 +12,41 @@ using Xunit;
 
 public class EventCreationServiceTests
 {
-    private HttpClient CreateMockHttpClient(HttpResponseMessage response, out Mock<HttpMessageHandler> handlerMock)
+    private EventCreationService CreateService(out Mock<HttpMessageHandler> handlerMock, HttpResponseMessage? response = null)
     {
         handlerMock = new Mock<HttpMessageHandler>();
+
+        response ??= new HttpResponseMessage(HttpStatusCode.OK);
+
+        var httpClient = new HttpClient(handlerMock.Object) { BaseAddress = new Uri("http://localhost/") };
+
+        var httpClientFactory = new Mock<IHttpClientFactory>();
+        httpClientFactory.Setup(f => f.CreateClient("EventService")).Returns(httpClient);
+
+        return new EventCreationService(httpClientFactory.Object);
+    }
+
+    private void VerifyEvent(HttpRequestMessage req, int expectedType, string expectedDevice, Action<JsonElement>? verifyData = null)
+    {
+        Assert.Equal(HttpMethod.Post, req.Method);
+        Assert.EndsWith("api/event", req.RequestUri!.ToString());
+        using var doc = JsonDocument.Parse(req.Content!.ReadAsStringAsync().Result);
+        Assert.Equal(expectedType, doc.RootElement.GetProperty("type").GetInt32());
+        Assert.Equal(expectedDevice, doc.RootElement.GetProperty("device").GetString());
+
+        if (verifyData != null)
+        {
+            var dataString = doc.RootElement.GetProperty("data").GetString();
+            using var dataDoc = JsonDocument.Parse(dataString!);
+            verifyData(dataDoc.RootElement);
+        }
+    }
+
+    [Fact]
+    public async Task CreateDeviceAddedEventAsync_Should_PostCorrectPayload()
+    {
+        var service = CreateService(out var handlerMock);
+        HttpRequestMessage? sentRequest = null;
 
         handlerMock
             .Protected()
@@ -23,207 +55,155 @@ public class EventCreationServiceTests
                 ItExpr.IsAny<HttpRequestMessage>(),
                 ItExpr.IsAny<CancellationToken>()
             )
-            .ReturnsAsync(response);
-
-        return new HttpClient(handlerMock.Object)
-        {
-            BaseAddress = new Uri("http://localhost/")
-        };
-    }
-
-    private EventCreationService CreateService(HttpResponseMessage response, out Mock<HttpMessageHandler> handlerMock)
-    {
-        var httpClient = CreateMockHttpClient(response, out handlerMock);
-
-        var httpClientFactory = new Mock<IHttpClientFactory>();
-        httpClientFactory.Setup(f => f.CreateClient("EventService"))
-                         .Returns(httpClient);
-
-        return new EventCreationService(httpClientFactory.Object);
-    }
-
-    [Fact]
-    public async Task CreateDeviceAddedEventAsync_Should_PostCorrectPayload_AndSucceed()
-    {
-        var service = CreateService(new HttpResponseMessage(HttpStatusCode.OK), out var handlerMock);
+            .Callback<HttpRequestMessage, CancellationToken>((req, _) => sentRequest = req)
+            .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK));
 
         var device = new Device { Id = 1, SerialNumber = "SN123" };
 
         await service.CreateDeviceAddedEventAsync(device, "jwt-token");
 
-        handlerMock.Protected().Verify(
-            "SendAsync",
-            Times.Once(),
-            ItExpr.Is<HttpRequestMessage>(req => VerifyDeviceAdded(req, "SN123")),
-            ItExpr.IsAny<CancellationToken>()
-        );
-    }
-
-    private static bool VerifyDeviceAdded(HttpRequestMessage req, string serial)
-    {
-        var json = req.Content!.ReadAsStringAsync().Result;
-        using var doc = JsonDocument.Parse(json);
-        var dataString = doc.RootElement.GetProperty("data").GetString();
-        using var dataDoc = JsonDocument.Parse(dataString!);
-        return req.Method == HttpMethod.Post &&
-               doc.RootElement.GetProperty("type").GetInt32() == 6 &&
-               doc.RootElement.GetProperty("device").GetString() == serial;
+        Assert.NotNull(sentRequest);
+        VerifyEvent(sentRequest!, 6, "SN123", data =>
+        {
+            Assert.Equal("SN123", data.GetProperty("SerialNumber").GetString());
+        });
     }
 
     [Fact]
     public async Task CreateDeviceAddedEventAsync_ShouldThrow_OnFailure()
     {
-        var service = CreateService(new HttpResponseMessage(HttpStatusCode.InternalServerError), out _);
+        var handlerMock = new Mock<HttpMessageHandler>();
+        handlerMock
+            .Protected()
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.IsAny<HttpRequestMessage>(),
+                ItExpr.IsAny<CancellationToken>()
+            )
+            .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.InternalServerError));
+
+        var httpClient = new HttpClient(handlerMock.Object) { BaseAddress = new Uri("http://localhost/") };
+        var httpClientFactory = new Mock<IHttpClientFactory>();
+        httpClientFactory.Setup(f => f.CreateClient("EventService")).Returns(httpClient);
+
+        var service = new EventCreationService(httpClientFactory.Object);
+
         var device = new Device { SerialNumber = "SN123" };
 
         await Assert.ThrowsAsync<Exception>(() => service.CreateDeviceAddedEventAsync(device, "jwt-token"));
     }
 
+
     [Fact]
     public async Task CreateDeviceInfoUpdatedEventAsync_Should_PostCorrectPayload()
     {
-        var service = CreateService(new HttpResponseMessage(HttpStatusCode.OK), out var handlerMock);
+        var service = CreateService(out var handlerMock);
+        HttpRequestMessage? sentRequest = null;
+
+        handlerMock
+            .Protected()
+            .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
+            .Callback<HttpRequestMessage, CancellationToken>((req, _) => sentRequest = req)
+            .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK));
 
         var oldDevice = new Device { SerialNumber = "SN123", Model = "OldModel" };
         var newDevice = new Device { SerialNumber = "SN123", Model = "NewModel" };
 
         await service.CreateDeviceInfoUpdatedEventAsync(oldDevice, newDevice, "jwt-token");
 
-        handlerMock.Protected().Verify(
-            "SendAsync",
-            Times.Once(),
-            ItExpr.Is<HttpRequestMessage>(req => VerifyDeviceInfoUpdated(req, "OldModel", "NewModel")),
-            ItExpr.IsAny<CancellationToken>()
-        );
-    }
-
-    private static bool VerifyDeviceInfoUpdated(HttpRequestMessage req, string oldModel, string newModel)
-    {
-        var json = req.Content!.ReadAsStringAsync().Result;
-        using var doc = JsonDocument.Parse(json);
-        var dataString = doc.RootElement.GetProperty("data").GetString();
-        using var dataDoc = JsonDocument.Parse(dataString!);
-        var data = dataDoc.RootElement;
-
-        return req.Method == HttpMethod.Post &&
-               doc.RootElement.GetProperty("type").GetInt32() == 1 &&
-               data.GetProperty("old").GetProperty("Model").GetString() == oldModel &&
-               data.GetProperty("new").GetProperty("Model").GetString() == newModel;
+        Assert.NotNull(sentRequest);
+        VerifyEvent(sentRequest!, 1, "SN123", data =>
+        {
+            Assert.Equal("OldModel", data.GetProperty("old").GetProperty("Model").GetString());
+            Assert.Equal("NewModel", data.GetProperty("new").GetProperty("Model").GetString());
+        });
     }
 
     [Fact]
     public async Task CreateDeviceStatusChangeEventAsync_Should_PostCorrectStatusChange()
     {
-        var service = CreateService(new HttpResponseMessage(HttpStatusCode.OK), out var handlerMock);
+        var service = CreateService(out var handlerMock);
+        HttpRequestMessage? sentRequest = null;
+
+        handlerMock
+            .Protected()
+            .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
+            .Callback<HttpRequestMessage, CancellationToken>((req, _) => sentRequest = req)
+            .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK));
 
         await service.CreateDeviceStatusChangeEventAsync("SN999", "offline", "online", "jwt-token");
 
-        handlerMock.Protected().Verify(
-            "SendAsync",
-            Times.Once(),
-            ItExpr.Is<HttpRequestMessage>(req => VerifyDeviceStatusChange(req, "offline", "online")),
-            ItExpr.IsAny<CancellationToken>()
-        );
-    }
-
-    private static bool VerifyDeviceStatusChange(HttpRequestMessage req, string oldStatus, string newStatus)
-    {
-        var json = req.Content!.ReadAsStringAsync().Result;
-        using var doc = JsonDocument.Parse(json);
-        var dataString = doc.RootElement.GetProperty("data").GetString();
-        using var dataDoc = JsonDocument.Parse(dataString!);
-        var data = dataDoc.RootElement;
-
-        return req.Method == HttpMethod.Post &&
-               doc.RootElement.GetProperty("type").GetInt32() == 2 &&
-               data.GetProperty("oldStatus").GetString() == oldStatus &&
-               data.GetProperty("newStatus").GetString() == newStatus;
+        Assert.NotNull(sentRequest);
+        VerifyEvent(sentRequest!, 2, "SN999", data =>
+        {
+            Assert.Equal("offline", data.GetProperty("oldStatus").GetString());
+            Assert.Equal("online", data.GetProperty("newStatus").GetString());
+        });
     }
 
     [Fact]
     public async Task CreateDeviceDataRecordingEventAsync_Should_PostCorrectData()
     {
-        var service = CreateService(new HttpResponseMessage(HttpStatusCode.OK), out var handlerMock);
+        var service = CreateService(out var handlerMock);
+        HttpRequestMessage? sentRequest = null;
 
-        var data = new DeviceDataDto { RecordedData = "temperature:25" };
-        await service.CreateDeviceDataRecordingEventAsync("SN111", data, "jwt-token");
+        handlerMock
+            .Protected()
+            .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
+            .Callback<HttpRequestMessage, CancellationToken>((req, _) => sentRequest = req)
+            .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK));
 
-        handlerMock.Protected().Verify(
-            "SendAsync",
-            Times.Once(),
-            ItExpr.Is<HttpRequestMessage>(req => VerifyDeviceData(req, "temperature:25")),
-            ItExpr.IsAny<CancellationToken>()
-        );
-    }
+        var dataDto = new DeviceDataDto { RecordedData = "temperature:25" };
+        await service.CreateDeviceDataRecordingEventAsync("SN111", dataDto, "jwt-token");
 
-    private static bool VerifyDeviceData(HttpRequestMessage req, string recordedData)
-    {
-        var json = req.Content!.ReadAsStringAsync().Result;
-        using var doc = JsonDocument.Parse(json);
-        var dataString = doc.RootElement.GetProperty("data").GetString();
-        using var dataDoc = JsonDocument.Parse(dataString!);
-        var data = dataDoc.RootElement;
-
-        return req.Method == HttpMethod.Post &&
-               doc.RootElement.GetProperty("type").GetInt32() == 5 &&
-               data.GetProperty("RecordedData").GetString() == recordedData;
+        Assert.NotNull(sentRequest);
+        VerifyEvent(sentRequest!, 5, "SN111", data =>
+        {
+            Assert.Equal("temperature:25", data.GetProperty("RecordedData").GetString());
+        });
     }
 
     [Fact]
     public async Task CreateDeviceSentCommandEventAsync_Should_PostCorrectCommand()
     {
-        var service = CreateService(new HttpResponseMessage(HttpStatusCode.OK), out var handlerMock);
+        var service = CreateService(out var handlerMock);
+        HttpRequestMessage? sentRequest = null;
 
-        var command = new DeviceCommandDto { Command = "reboot" };
-        await service.CreateDeviceSentCommandEventAsync("SN777", command, "jwt-token");
+        handlerMock
+            .Protected()
+            .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
+            .Callback<HttpRequestMessage, CancellationToken>((req, _) => sentRequest = req)
+            .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK));
 
-        handlerMock.Protected().Verify(
-            "SendAsync",
-            Times.Once(),
-            ItExpr.Is<HttpRequestMessage>(req => VerifyDeviceCommand(req, "reboot")),
-            ItExpr.IsAny<CancellationToken>()
-        );
-    }
+        var cmd = new DeviceCommandDto { Command = "reboot" };
+        await service.CreateDeviceSentCommandEventAsync("SN777", cmd, "jwt-token");
 
-    private static bool VerifyDeviceCommand(HttpRequestMessage req, string command)
-    {
-        var json = req.Content!.ReadAsStringAsync().Result;
-        using var doc = JsonDocument.Parse(json);
-        var dataString = doc.RootElement.GetProperty("data").GetString();
-        using var dataDoc = JsonDocument.Parse(dataString!);
-        var data = dataDoc.RootElement;
-
-        return req.Method == HttpMethod.Post &&
-               doc.RootElement.GetProperty("type").GetInt32() == 3 &&
-               data.GetProperty("Command").GetString() == command;
+        Assert.NotNull(sentRequest);
+        VerifyEvent(sentRequest!, 3, "SN777", data =>
+        {
+            Assert.Equal("reboot", data.GetProperty("Command").GetString());
+        });
     }
 
     [Fact]
     public async Task CreateDeviceFirmwareChangeEventAsync_Should_PostCorrectFirmwareChange()
     {
-        var service = CreateService(new HttpResponseMessage(HttpStatusCode.OK), out var handlerMock);
+        var service = CreateService(out var handlerMock);
+        HttpRequestMessage? sentRequest = null;
+
+        handlerMock
+            .Protected()
+            .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
+            .Callback<HttpRequestMessage, CancellationToken>((req, _) => sentRequest = req)
+            .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK));
 
         await service.CreateDeviceFirmwareChangeEventAsync("SN555", "1.0", "2.0", "jwt-token");
 
-        handlerMock.Protected().Verify(
-            "SendAsync",
-            Times.Once(),
-            ItExpr.Is<HttpRequestMessage>(req => VerifyDeviceFirmware(req, "1.0", "2.0")),
-            ItExpr.IsAny<CancellationToken>()
-        );
-    }
-
-    private static bool VerifyDeviceFirmware(HttpRequestMessage req, string oldVersion, string newVersion)
-    {
-        var json = req.Content!.ReadAsStringAsync().Result;
-        using var doc = JsonDocument.Parse(json);
-        var dataString = doc.RootElement.GetProperty("data").GetString();
-        using var dataDoc = JsonDocument.Parse(dataString!);
-        var data = dataDoc.RootElement;
-
-        return req.Method == HttpMethod.Post &&
-               doc.RootElement.GetProperty("type").GetInt32() == 4 &&
-               data.GetProperty("oldFirmwareVersion").GetString() == oldVersion &&
-               data.GetProperty("newFirmwareVersion").GetString() == newVersion;
+        Assert.NotNull(sentRequest);
+        VerifyEvent(sentRequest!, 4, "SN555", data =>
+        {
+            Assert.Equal("1.0", data.GetProperty("oldFirmwareVersion").GetString());
+            Assert.Equal("2.0", data.GetProperty("newFirmwareVersion").GetString());
+        });
     }
 }
