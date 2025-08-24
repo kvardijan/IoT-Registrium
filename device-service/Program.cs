@@ -56,7 +56,7 @@ namespace device_service
             builder.Services.AddControllers();
 
             builder.Services.AddScoped<DeviceService>();
-            builder.Services.AddScoped<EventCreationService>();
+            builder.Services.AddScoped<IEventCreationService, EventCreationService>();
 
             var allowedOrigins = builder.Configuration.GetSection("AllowedOrigins").Get<string[]>();
             builder.Services.AddCors(options =>
