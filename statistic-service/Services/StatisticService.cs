@@ -19,7 +19,7 @@ namespace statistic_service.Services
             int deactivated = 0;
             int error = 0;
             var devices = await _dataFetchingService.GetDevices();
-            if (events == null) return null;
+            if (devices == null) return null;
 
             foreach (var device in devices)
             {
