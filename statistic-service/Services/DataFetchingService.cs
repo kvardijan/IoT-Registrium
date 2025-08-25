@@ -7,6 +7,7 @@ namespace statistic_service.Services
     public interface IDataFetchingService
     {
         Task<List<DeviceResponse>> GetDevices();
+        Task<List<EventResponse>> GetEventsOfDevice();
     }
 
     public class DataFetchingService : IDataFetchingService
@@ -31,6 +32,23 @@ namespace statistic_service.Services
             var devices = apiResponse.Data;
 
             return devices ?? new List<DeviceResponse>();
+        }
+
+        public async Task<List<EventResponse>> GetEventsOfDevice(string serial, string jwtToken)
+        {
+            _httpClientEvents.DefaultRequestHeaders.Authorization = null;
+
+            if (!string.IsNullOrEmpty(jwtToken))
+            {
+                _httpClientEvents.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", jwtToken.Replace("Bearer ", ""));
+            }
+
+            var response = await _httpClientEvents.GetAsync("api/event/device/" + serial);
+            response.EnsureSuccessStatusCode();
+            var apiResponse = await response.Content.ReadFromJsonAsync<ApiResponse<List<EventResponse>>>();
+            var events = apiResponse.Data;
+
+            return events ?? new List<EventResponse>();
         }
     }
 }
