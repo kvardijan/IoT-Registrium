@@ -1,4 +1,5 @@
 ﻿using statistic_service.DTOs;
+using System.Text.Json;
 
 namespace statistic_service.Services
 {
@@ -44,5 +45,61 @@ namespace statistic_service.Services
                 Error = error
             };
         }
+
+        public async Task<TemperatureDeviceStatisticResponse> getTemperatureDeviceStatistic(string serial, string jwtToken)
+        {
+            float max = float.MinValue;
+            float min = float.MaxValue;
+            float sum = 0;
+            int count = 0;
+
+            var events = await _dataFetchingService.GetEventsOfDevice(serial, jwtToken);
+
+            foreach (var e in events)
+            {
+                if (!string.IsNullOrEmpty(e.Data))
+                {
+                    try
+                    {
+                        var wrapper = JsonSerializer.Deserialize<EventDataWrapper>(e.Data);
+
+                        if (wrapper?.RecordedData?.Temperature != null)
+                        {
+                            var tempStr = wrapper.RecordedData.Temperature.Replace("C", "");
+                            if (float.TryParse(tempStr, out float temperature))
+                            {
+                                max = Math.Max(max, temperature);
+                                min = Math.Min(min, temperature);
+                                sum += temperature;
+                                count++;
+                            }
+                        }
+                    }
+                    catch (JsonException ex)
+                    {
+                        Console.WriteLine($"Failed to parse event data: {ex.Message}");
+                    }
+                }
+            }
+
+            var avg = count > 0 ? sum / count : 0;
+
+            return new TemperatureDeviceStatisticResponse
+            {
+                Max = max,
+                Min = min,
+                Avg = avg
+            };
+        }
+    }
+
+    public class EventDataWrapper
+    {
+        public RecordedData RecordedData { get; set; }
+    }
+
+    public class RecordedData
+    {
+        public string? Temperature { get; set; }
     }
 }

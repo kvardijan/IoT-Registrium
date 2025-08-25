@@ -7,7 +7,7 @@ namespace statistic_service.Services
     public interface IDataFetchingService
     {
         Task<List<DeviceResponse>> GetDevices();
-        Task<List<EventResponse>> GetEventsOfDevice();
+        Task<List<EventResponse>> GetEventsOfDevice(string serial, string jwtToken);
     }
 
     public class DataFetchingService : IDataFetchingService
