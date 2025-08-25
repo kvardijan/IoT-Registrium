@@ -52,6 +52,7 @@ namespace statistic_service
 
             builder.Services.AddControllers();
             builder.Services.AddScoped<StatisticService>();
+            builder.Services.AddScoped<IDataFetchingService, DataFetchingService>();
 
             var allowedOrigins = builder.Configuration.GetSection("AllowedOrigins").Get<string[]>();
             builder.Services.AddCors(options =>
@@ -86,6 +87,22 @@ namespace statistic_service
 
             // +++JWT CONFIG
             builder.Services.AddAuthorization();
+
+            var eventServiceUrl = builder.Configuration["EventServiceUrl"];
+            builder.Services.AddHttpClient("EventService", client =>
+            {
+                client.BaseAddress = new Uri(eventServiceUrl);
+            });
+            var locationServiceUrl = builder.Configuration["LocationServiceUrl"];
+            builder.Services.AddHttpClient("LocationService", client =>
+            {
+                client.BaseAddress = new Uri(locationServiceUrl);
+            });
+            var deviceServiceUrl = builder.Configuration["DeviceServiceUrl"];
+            builder.Services.AddHttpClient("DeviceService", client =>
+            {
+                client.BaseAddress = new Uri(deviceServiceUrl);
+            });
 
             var app = builder.Build();
 
