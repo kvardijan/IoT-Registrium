@@ -60,5 +60,20 @@ namespace statistic_service.Controllers
 
             return Ok(ApiResponse<HumidityDeviceStatisticResponse>.Ok(humidityDeviceStatisticResponse));
         }
+
+        [Authorize]
+        [HttpGet("smartbin/{serial}")]
+        public async Task<IActionResult> GetSmartBinDeviceStatistic(string serial)
+        {
+            var jwtToken = HttpContext.Request.Headers["Authorization"].ToString();
+            var smartBinDeviceStatisticResponse = await _statisticService.GetSmartBinDeviceStatistic(serial, jwtToken);
+
+            if (smartBinDeviceStatisticResponse == null)
+            {
+                return BadRequest(ApiResponse<object>.Fail("Failed to get smart bin device statistic.", 400));
+            }
+
+            return Ok(ApiResponse<SmartBinDeviceStatisticResponse>.Ok(smartBinDeviceStatisticResponse));
+        }
     }
 }

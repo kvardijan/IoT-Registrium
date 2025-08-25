@@ -12,13 +12,14 @@ namespace statistic_service.Services
             _dataFetchingService = dataFetchingService;
         }
 
-        public async Task<StatusStatisticResponse> GetDeviceStatusStatistic()
+        public async Task<StatusStatisticResponse?> GetDeviceStatusStatistic()
         {
             int active = 0;
             int idle = 0;
             int deactivated = 0;
             int error = 0;
             var devices = await _dataFetchingService.GetDevices();
+            if (events == null) return null;
 
             foreach (var device in devices)
             {
@@ -46,7 +47,7 @@ namespace statistic_service.Services
             };
         }
 
-        public async Task<TemperatureDeviceStatisticResponse> GetTemperatureDeviceStatistic(string serial, string jwtToken)
+        public async Task<TemperatureDeviceStatisticResponse?> GetTemperatureDeviceStatistic(string serial, string jwtToken)
         {
             float max = float.MinValue;
             float min = float.MaxValue;
@@ -54,6 +55,7 @@ namespace statistic_service.Services
             int count = 0;
 
             var events = await _dataFetchingService.GetEventsOfDevice(serial, jwtToken);
+            if (events == null) return null;
 
             foreach (var e in events)
             {
@@ -93,7 +95,7 @@ namespace statistic_service.Services
             };
         }
 
-        public async Task<HumidityDeviceStatisticResponse> GetHumidityDeviceStatistic(string serial, string jwtToken)
+        public async Task<HumidityDeviceStatisticResponse?> GetHumidityDeviceStatistic(string serial, string jwtToken)
         {
             float max = float.MinValue;
             float min = float.MaxValue;
@@ -101,6 +103,7 @@ namespace statistic_service.Services
             int count = 0;
 
             var events = await _dataFetchingService.GetEventsOfDevice(serial, jwtToken);
+            if (events == null) return null;
 
             foreach (var e in events)
             {
@@ -139,6 +142,47 @@ namespace statistic_service.Services
                 Avg = avg
             };
         }
+
+        public async Task<SmartBinDeviceStatisticResponse?> GetSmartBinDeviceStatistic(string serial, string jwtToken)
+        {
+            var events = await _dataFetchingService.GetEventsOfDevice(serial, jwtToken);
+            if (events == null) return null;
+
+            EventResponse? latestEvent = null;
+            int latestCapacity = 0;
+
+            foreach (var e in events)
+            {
+                if (!string.IsNullOrEmpty(e.Data))
+                {
+                    try
+                    {
+                        var wrapper = JsonSerializer.Deserialize<EventDataWrapper>(e.Data,
+                            new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+                        if (wrapper?.RecordedData?.Capacity != null &&
+                            int.TryParse(wrapper.RecordedData.Capacity.Replace("%", ""), out int capacity))
+                        {
+                            if (latestEvent == null || e.Timestamp > latestEvent.Timestamp)
+                            {
+                                latestEvent = e;
+                                latestCapacity = capacity;
+                            }
+                        }
+                    }
+                    catch (JsonException ex)
+                    {
+                        Console.WriteLine($"Failed to parse event data: {ex.Message}");
+                    }
+                }
+            }
+
+            return new SmartBinDeviceStatisticResponse
+            {
+                PercentageFull = latestCapacity
+            };
+        }
+
     }
 
     public class EventDataWrapper
@@ -150,5 +194,6 @@ namespace statistic_service.Services
     {
         public string? Temperature { get; set; }
         public string? Humidity { get; set; }
+        public string? Capacity { get; set; }
     }
 }
