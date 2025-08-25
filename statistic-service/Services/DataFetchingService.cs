@@ -1,4 +1,5 @@
 ﻿using statistic_service.DTOs;
+using statistic_service.Models;
 using System.Net.Http;
 
 namespace statistic_service.Services
@@ -26,7 +27,8 @@ namespace statistic_service.Services
             var response = await _httpClientDevices.GetAsync("api/device");
 
             response.EnsureSuccessStatusCode();
-            var devices = await response.Content.ReadFromJsonAsync<List<DeviceResponse>>();
+            var apiResponse = await response.Content.ReadFromJsonAsync<ApiResponse<List<DeviceResponse>>>();
+            var devices = apiResponse.Data;
 
             return devices ?? new List<DeviceResponse>();
         }

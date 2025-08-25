@@ -4,9 +4,9 @@ namespace statistic_service.Services
 {
     public class StatisticService
     {
-        private readonly DataFetchingService _dataFetchingService;
+        private readonly IDataFetchingService _dataFetchingService;
 
-        public StatisticService(DataFetchingService dataFetchingService)
+        public StatisticService(IDataFetchingService dataFetchingService)
         {
             _dataFetchingService = dataFetchingService;
         }
