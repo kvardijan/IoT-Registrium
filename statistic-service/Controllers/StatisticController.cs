@@ -45,5 +45,20 @@ namespace statistic_service.Controllers
 
             return Ok(ApiResponse<TemperatureDeviceStatisticResponse>.Ok(temperatureDeviceStatisticResponse));
         }
+
+        [Authorize]
+        [HttpGet("humidity/{serial}")]
+        public async Task<IActionResult> GetHumidityDeviceStatistic(string serial)
+        {
+            var jwtToken = HttpContext.Request.Headers["Authorization"].ToString();
+            var humidityDeviceStatisticResponse = await _statisticService.GetHumidityDeviceStatistic(serial, jwtToken);
+
+            if (humidityDeviceStatisticResponse == null)
+            {
+                return BadRequest(ApiResponse<object>.Fail("Failed to get humidity device statistic.", 400));
+            }
+
+            return Ok(ApiResponse<HumidityDeviceStatisticResponse>.Ok(humidityDeviceStatisticResponse));
+        }
     }
 }

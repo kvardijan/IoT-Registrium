@@ -92,6 +92,53 @@ namespace statistic_service.Services
                 Avg = avg
             };
         }
+
+        public async Task<HumidityDeviceStatisticResponse> GetHumidityDeviceStatistic(string serial, string jwtToken)
+        {
+            float max = float.MinValue;
+            float min = float.MaxValue;
+            float sum = 0;
+            int count = 0;
+
+            var events = await _dataFetchingService.GetEventsOfDevice(serial, jwtToken);
+
+            foreach (var e in events)
+            {
+                if (!string.IsNullOrEmpty(e.Data))
+                {
+                    try
+                    {
+                        var wrapper = JsonSerializer.Deserialize<EventDataWrapper>(e.Data,
+                            new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+                        if (wrapper?.RecordedData?.Humidity != null)
+                        {
+                            var tempStr = wrapper.RecordedData.Humidity.Replace("%", "");
+                            if (float.TryParse(tempStr, out float humidity))
+                            {
+                                max = Math.Max(max, humidity);
+                                min = Math.Min(min, humidity);
+                                sum += humidity;
+                                count++;
+                            }
+                        }
+                    }
+                    catch (JsonException ex)
+                    {
+                        Console.WriteLine($"Failed to parse event data: {ex.Message}");
+                    }
+                }
+            }
+
+            var avg = count > 0 ? sum / count : 0;
+
+            return new HumidityDeviceStatisticResponse
+            {
+                Max = max,
+                Min = min,
+                Avg = avg
+            };
+        }
     }
 
     public class EventDataWrapper
@@ -102,5 +149,6 @@ namespace statistic_service.Services
     public class RecordedData
     {
         public string? Temperature { get; set; }
+        public string? Humidity { get; set; }
     }
 }
