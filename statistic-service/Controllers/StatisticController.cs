@@ -19,9 +19,9 @@ namespace statistic_service.Controllers
 
         [Authorize]
         [HttpGet]
-        public async Task<IActionResult> getDeviceStatusStatistic()
+        public async Task<IActionResult> GetDeviceStatusStatistic()
         {
-            var statusStatistic = await _statisticService.getDeviceStatusStatistic();
+            var statusStatistic = await _statisticService.GetDeviceStatusStatistic();
 
             if (statusStatistic == null)
             {
@@ -29,6 +29,21 @@ namespace statistic_service.Controllers
             }
 
             return Ok(ApiResponse<StatusStatisticResponse>.Ok(statusStatistic));
+        }
+
+        [Authorize]
+        [HttpGet("temperature/{serial}")]
+        public async Task<IActionResult> GetTemperatureDeviceStatistic(string serial)
+        {
+            var jwtToken = HttpContext.Request.Headers["Authorization"].ToString();
+            var temperatureDeviceStatisticResponse = await _statisticService.GetTemperatureDeviceStatistic(serial, jwtToken);
+
+            if (temperatureDeviceStatisticResponse == null)
+            {
+                return BadRequest(ApiResponse<object>.Fail("Failed to get temperature device statistic.", 400));
+            }
+
+            return Ok(ApiResponse<TemperatureDeviceStatisticResponse>.Ok(temperatureDeviceStatisticResponse));
         }
     }
 }

@@ -12,7 +12,7 @@ namespace statistic_service.Services
             _dataFetchingService = dataFetchingService;
         }
 
-        public async Task<StatusStatisticResponse> getDeviceStatusStatistic()
+        public async Task<StatusStatisticResponse> GetDeviceStatusStatistic()
         {
             int active = 0;
             int idle = 0;
@@ -46,7 +46,7 @@ namespace statistic_service.Services
             };
         }
 
-        public async Task<TemperatureDeviceStatisticResponse> getTemperatureDeviceStatistic(string serial, string jwtToken)
+        public async Task<TemperatureDeviceStatisticResponse> GetTemperatureDeviceStatistic(string serial, string jwtToken)
         {
             float max = float.MinValue;
             float min = float.MaxValue;
