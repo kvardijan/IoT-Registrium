@@ -61,7 +61,8 @@ namespace statistic_service.Services
                 {
                     try
                     {
-                        var wrapper = JsonSerializer.Deserialize<EventDataWrapper>(e.Data);
+                        var wrapper = JsonSerializer.Deserialize<EventDataWrapper>(e.Data,
+                            new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 
                         if (wrapper?.RecordedData?.Temperature != null)
                         {
