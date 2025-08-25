@@ -21,7 +21,14 @@ namespace statistic_service.Controllers
         [HttpGet]
         public async Task<IActionResult> getDeviceStatusStatistic()
         {
-         return Ok(ApiResponse<StatusStatisticResponse>.Ok(null));
+            var statusStatistic = await _statisticService.getDeviceStatusStatistic();
+
+            if (statusStatistic == null)
+            {
+                return BadRequest(ApiResponse<object>.Fail("Failed to get device status statistic.", 400));
+            }
+
+            return Ok(ApiResponse<StatusStatisticResponse>.Ok(statusStatistic));
         }
     }
 }
