@@ -21,11 +21,13 @@ export class Statistic implements OnInit {
   deactivatedPercent = 0;
   errorPercent = 0;
   totalPercent = 0;
+  devices: any[] = [];
 
   constructor(private http: HttpClient, public userManager: UserManagerService) { }
 
   ngOnInit(): void {
     this.fetchStatusStatistic();
+    this.fetchDevices();
   }
 
   fetchStatusStatistic() {
@@ -49,11 +51,27 @@ export class Statistic implements OnInit {
             this.deactivatedPercent = Math.round((this.deactivated / this.total) * 10000) / 100;
             this.errorPercent = Math.round((this.error / this.total) * 10000) / 100;
           } else {
-            console.error('Failed to fetch statuses:', response.error);
+            console.error('Failed to fetch status statistic:', response.error);
           }
         },
         error: (err) => {
-          console.error('Error fetching statuses', err);
+          console.error('Error fetching status statistic', err);
+        }
+      });
+  }
+
+  fetchDevices() {
+    this.http.get<any>(environment.deviceApi)
+      .subscribe({
+        next: (response) => {
+          if (response.success) {
+            this.devices = response.data;
+          } else {
+            console.error('Failed to fetch devices:', response.error);
+          }
+        },
+        error: (err) => {
+          console.error('Error fetching devices', err);
         }
       });
   }
