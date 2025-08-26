@@ -169,7 +169,7 @@ export class Statistic implements OnInit {
         break;
       }
       case 2: { // humidity
-        const data = this.fetchDeviceStatistic(serial, 'humidity');
+        const data = await this.fetchDeviceStatistic(serial, 'humidity');
         if (data != null) {
           this.processHumidityData(data);
           this.showHumidity = true;
@@ -179,7 +179,7 @@ export class Statistic implements OnInit {
         break;
       }
       case 4: { // smartbin
-        const data = this.fetchDeviceStatistic(serial, 'smartbin');
+        const data = await this.fetchDeviceStatistic(serial, 'smartbin');
         if (data != null) {
           this.processSmartBinData(data);
           this.showSmartBin = true;
@@ -212,8 +212,9 @@ export class Statistic implements OnInit {
   }
 
   processSmartBinData(data: any) {
+    console.log(data);
     this.smartBinData = {
-      percentageFull: data.PercentageFull
+      percentageFull: data.percentageFull
     };
   }
 }
