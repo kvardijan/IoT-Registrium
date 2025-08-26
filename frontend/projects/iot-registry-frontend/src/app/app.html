@@ -6,7 +6,7 @@
         <a class="nav-link" routerLink="/devicestable">Devices</a>
         @if(userManager.isLoggedIn()){
         <a class="nav-link" routerLink="/locations">Locations</a>
-        <a class="nav-link">Statistics</a>
+        <a class="nav-link" routerLink="/statistic">Statistics</a>
         }
         <a class="nav-link" (click)="onLoginClick()">{{ userManager.isLoggedIn() ? 'Logout' : 'Log in' }}</a>
     </div>

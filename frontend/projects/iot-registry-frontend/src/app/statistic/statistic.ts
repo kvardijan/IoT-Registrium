@@ -8,5 +8,9 @@ import { Component } from '@angular/core';
   styleUrl: './statistic.scss'
 })
 export class Statistic {
-
+  active = 0;
+  idle = 0;
+  deactivated = 0;
+  error = 0;
+  total = 0;
 }
