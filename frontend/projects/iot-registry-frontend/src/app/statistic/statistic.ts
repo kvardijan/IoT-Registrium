@@ -121,6 +121,64 @@ export class Statistic implements OnInit {
     const device = event.option.value;
     console.log('Selected device serial:', device.serialNumber);
 
+    this.determineDeviceTypeAndFetch(device.serialNumber, device.typeId);
+  }
 
+  fetchDeviceStatistic(serial: string, deviceType: string) {
+    const jwt = this.userManager.getToken();
+    const headers = {
+      Authorization: 'Bearer ' + jwt
+    };
+
+    this.http.get<any>(environment.statisticApi + '/' + deviceType + '/' + serial, { headers })
+      .subscribe({
+        next: (response) => {
+          if (response.success) {
+            console.log(response.data);
+            return response.data;
+          } else {
+            console.error('Failed to fetch device statistic:', response.error);
+          }
+        },
+        error: (err) => {
+          console.error('Error fetching device statistic', err);
+          return null;
+        }
+      });
+  }
+
+  determineDeviceTypeAndFetch(serial: string, typeid: number) {
+    switch (typeid) {
+      case 1: { // temperature
+        const data = this.fetchDeviceStatistic(serial, 'temperature');
+        if (data != null){
+
+        }else{
+          console.log("Failed fetching statistic.");
+        }
+        break;
+      }
+      case 2: { // humidity
+        const data = this.fetchDeviceStatistic(serial, 'humidity');
+        if (data != null){
+
+        }else{
+          console.log("Failed fetching statistic.");
+        }
+        break;
+      }
+      case 4: { // smartbin
+        const data = this.fetchDeviceStatistic(serial, 'smartbin');
+        if (data != null){
+
+        }else{
+          console.log("Failed fetching statistic.");
+        }
+        break;
+      }
+      default: { // not supported
+        console.log("Device type not supported.");
+      }
+    }
   }
 }
