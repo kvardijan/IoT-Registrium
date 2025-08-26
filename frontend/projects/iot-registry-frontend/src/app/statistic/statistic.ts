@@ -151,27 +151,27 @@ export class Statistic implements OnInit {
     switch (typeid) {
       case 1: { // temperature
         const data = this.fetchDeviceStatistic(serial, 'temperature');
-        if (data != null){
-
-        }else{
+        if (data != null) {
+          this.processTemperatureData(data);
+        } else {
           console.log("Failed fetching statistic.");
         }
         break;
       }
       case 2: { // humidity
         const data = this.fetchDeviceStatistic(serial, 'humidity');
-        if (data != null){
-
-        }else{
+        if (data != null) {
+          this.processHumidityData(data);
+        } else {
           console.log("Failed fetching statistic.");
         }
         break;
       }
       case 4: { // smartbin
         const data = this.fetchDeviceStatistic(serial, 'smartbin');
-        if (data != null){
-
-        }else{
+        if (data != null) {
+          this.processSmartBinData(data);
+        } else {
           console.log("Failed fetching statistic.");
         }
         break;
@@ -180,5 +180,17 @@ export class Statistic implements OnInit {
         console.log("Device type not supported.");
       }
     }
+  }
+
+  processTemperatureData(data: any) {
+
+  }
+
+  processHumidityData(data: any) {
+
+  }
+
+  processSmartBinData(data: any) {
+
   }
 }
