@@ -31,40 +31,51 @@
     </div>
 </div>
 
-<div class="field">
-    <label for="device">Device:</label>
-    <mat-form-field appearance="fill">
-        <input type="text" matInput placeholder="Serial number" [formControl]="deviceControl"
-            [matAutocomplete]="auto" />
-        <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayDevice"
-            (optionSelected)="onDeviceSelected($event)">
-            @for (d of filteredDevices | async; track d.id) {
-            <mat-option [value]="d">
-                {{ d.serialNumber }}
-            </mat-option>
-            }
-        </mat-autocomplete>
-    </mat-form-field>
-</div>
+<div class="deviceStatisticRow">
+    <div class="field">
+        <label for="device">Device:</label>
+        <mat-form-field appearance="fill">
+            <input type="text" matInput placeholder="Serial number" [formControl]="deviceControl"
+                [matAutocomplete]="auto" />
+            <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayDevice"
+                (optionSelected)="onDeviceSelected($event)">
+                @for (d of filteredDevices | async; track d.id) {
+                <mat-option [value]="d">
+                    {{ d.serialNumber }}
+                </mat-option>
+                }
+            </mat-autocomplete>
+        </mat-form-field>
+    </div>
 
-<!-- Temperature Stats -->
-<div *ngIf="showTemperature">
-  <h3>Temperature Statistics</h3>
-  <p>Max: {{ temperatureData?.max }}</p>
-  <p>Min: {{ temperatureData?.min }}</p>
-  <p>Avg: {{ temperatureData?.avg }}</p>
-</div>
+    @if(showTemperature) {
+    <div>
+        <h3>Temperature Statistics</h3>
+        <div class="temperatureInfoRow">
+            <p class="max">Max: {{ temperatureData?.max }}</p>
+            <p class="min">Min: {{ temperatureData?.min }}</p>
+            <p class="avg">Avg: {{ temperatureData?.avg }}</p>
+        </div>
+    </div>
+    }
 
-<!-- Humidity Stats -->
-<div *ngIf="showHumidity">
-  <h3>Humidity Statistics</h3>
-  <p>Max: {{ humidityData?.max }}</p>
-  <p>Min: {{ humidityData?.min }}</p>
-  <p>Avg: {{ humidityData?.avg }}</p>
-</div>
+    @if(showHumidity) {
+    <div>
+        <h3>Humidity Statistics</h3>
+        <div class="humidityInfoRow">
+            <p class="max">Max: {{ humidityData?.max }}</p>
+            <p class="min">Min: {{ humidityData?.min }}</p>
+            <p class="avg">Avg: {{ humidityData?.avg }}</p>
+        </div>
+    </div>
+    }
 
-<!-- SmartBin Stats -->
-<div *ngIf="showSmartBin">
-  <h3>Smart Bin Statistics</h3>
-  <p>Capacity: {{ smartBinData?.percentageFull }}%</p>
+    @if(showSmartBin) {
+    <div>
+        <h3>Smart Bin Statistics</h3>
+        <div class="smartBinInfoRow">
+            <p class="capacity">Capacity: {{ smartBinData?.percentageFull }}%</p>
+        </div>
+    </div>
+    }
 </div>

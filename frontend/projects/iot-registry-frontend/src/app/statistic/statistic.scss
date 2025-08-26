@@ -4,8 +4,10 @@ $yellow-background: #feffdb;
 $red-background: #ffe6e5;
 $blue-background: #b8d9ff;
 
-.deviceStatusRow {
+.deviceStatusRow,
+.deviceStatisticRow {
     margin-left: 10px;
+    margin-top: 30px;
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
@@ -55,7 +57,7 @@ $blue-background: #b8d9ff;
 .field {
     font-weight: bold;
     margin-top: 20px;
-    margin-left: 20px;
+    margin-left: 10px;
     margin-right: 20px;
     display: flex;
     flex-direction: column;
@@ -79,5 +81,47 @@ $blue-background: #b8d9ff;
 
     ::ng-deep .mat-mdc-autocomplete-panel .mat-mdc-option:hover {
         background-color: rgba(0, 68, 255, 0.1);
+    }
+}
+
+.deviceStatisticRow {
+    display: flex;
+    align-items: center;
+
+    .temperatureInfoRow,
+    .humidityInfoRow,
+    .smartBinInfoRow {
+        margin-top: 10px;
+        display: flex;
+        flex-direction: row;
+        gap: 20px;
+
+        p {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 20px;
+            border-color: black;
+            border-width: 2px;
+            border-style: solid;
+            height: 50px;
+            width: 100px;
+        }
+
+        .max {
+            background-color: $red-background;
+        }
+
+        .min {
+            background-color: $blue-background;
+        }
+
+        .avg {
+            background-color: $yellow-background;
+        }
+
+        .capacity {
+            background-color: $green-background;
+        }
     }
 }
