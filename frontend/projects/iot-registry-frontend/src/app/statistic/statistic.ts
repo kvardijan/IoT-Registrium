@@ -5,7 +5,7 @@ import { environment } from '../environments/environment';
 import { MatAutocomplete } from '@angular/material/autocomplete';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { Observable } from 'rxjs';
+import { Observable, firstValueFrom } from 'rxjs';
 import { startWith, map } from 'rxjs/operators';
 import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
@@ -44,9 +44,17 @@ export class Statistic implements OnInit {
   deactivatedPercent = 0;
   errorPercent = 0;
   totalPercent = 0;
+
   devices: Device[] = [];
   deviceControl = new FormControl('');
   filteredDevices!: Observable<Device[]>;
+
+  showTemperature = false;
+  showHumidity = false;
+  showSmartBin = false;
+  temperatureData: { max: number; min: number; avg: number } | null = null;
+  humidityData: { max: number; min: number; avg: number } | null = null;
+  smartBinData: { percentageFull: number } | null = null;
 
   constructor(private http: HttpClient, public userManager: UserManagerService) { }
 
@@ -119,42 +127,44 @@ export class Statistic implements OnInit {
 
   onDeviceSelected(event: MatAutocompleteSelectedEvent) {
     const device = event.option.value;
-    console.log('Selected device serial:', device.serialNumber);
 
     this.determineDeviceTypeAndFetch(device.serialNumber, device.typeId);
   }
 
-  fetchDeviceStatistic(serial: string, deviceType: string) {
+  async fetchDeviceStatistic(serial: string, deviceType: string) {
     const jwt = this.userManager.getToken();
-    const headers = {
-      Authorization: 'Bearer ' + jwt
-    };
+    const headers = { Authorization: 'Bearer ' + jwt };
 
-    this.http.get<any>(environment.statisticApi + '/' + deviceType + '/' + serial, { headers })
-      .subscribe({
-        next: (response) => {
-          if (response.success) {
-            console.log(response.data);
-            return response.data;
-          } else {
-            console.error('Failed to fetch device statistic:', response.error);
-          }
-        },
-        error: (err) => {
-          console.error('Error fetching device statistic', err);
-          return null;
-        }
-      });
+    try {
+      const response = await firstValueFrom(
+        this.http.get<any>(`${environment.statisticApi}/${deviceType}/${serial}`, { headers })
+      );
+
+      if (response.success) {
+        return response.data;
+      } else {
+        console.error('Failed to fetch device statistic:', response.error);
+        return null;
+      }
+    } catch (err) {
+      console.error('Error fetching device statistic', err);
+      return null;
+    }
   }
 
-  determineDeviceTypeAndFetch(serial: string, typeid: number) {
+  async determineDeviceTypeAndFetch(serial: string, typeid: number) {
+    this.showTemperature = false;
+    this.showHumidity = false;
+    this.showSmartBin = false;
+
     switch (typeid) {
       case 1: { // temperature
-        const data = this.fetchDeviceStatistic(serial, 'temperature');
+        const data = await this.fetchDeviceStatistic(serial, 'temperature');
         if (data != null) {
           this.processTemperatureData(data);
+          this.showTemperature = true;
         } else {
-          console.log("Failed fetching statistic.");
+          console.log("Failed fetching temperature statistic.");
         }
         break;
       }
@@ -162,8 +172,9 @@ export class Statistic implements OnInit {
         const data = this.fetchDeviceStatistic(serial, 'humidity');
         if (data != null) {
           this.processHumidityData(data);
+          this.showHumidity = true;
         } else {
-          console.log("Failed fetching statistic.");
+          console.log("Failed fetching humidity statistic.");
         }
         break;
       }
@@ -171,8 +182,9 @@ export class Statistic implements OnInit {
         const data = this.fetchDeviceStatistic(serial, 'smartbin');
         if (data != null) {
           this.processSmartBinData(data);
+          this.showSmartBin = true;
         } else {
-          console.log("Failed fetching statistic.");
+          console.log("Failed fetching smartbin statistic.");
         }
         break;
       }
@@ -183,14 +195,25 @@ export class Statistic implements OnInit {
   }
 
   processTemperatureData(data: any) {
-
+    console.log(data);
+    this.temperatureData = {
+      max: data.max,
+      min: data.min,
+      avg: data.avg
+    };
   }
 
   processHumidityData(data: any) {
-
+    this.humidityData = {
+      max: data.max,
+      min: data.min,
+      avg: data.avg
+    };
   }
 
   processSmartBinData(data: any) {
-
+    this.smartBinData = {
+      percentageFull: data.PercentageFull
+    };
   }
 }
