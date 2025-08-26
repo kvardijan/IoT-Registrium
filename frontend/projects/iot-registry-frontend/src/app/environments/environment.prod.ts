@@ -3,5 +3,6 @@ export const environment = {
   deviceApi: '/api/device',
   locationApi: '/api/location',
   eventApi: '/api/event',
-  userApi: '/api/user'
+  userApi: '/api/user',
+  statisticApi: '/api/statistic'
 };
