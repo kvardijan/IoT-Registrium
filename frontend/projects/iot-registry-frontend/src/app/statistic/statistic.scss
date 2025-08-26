@@ -1,0 +1,52 @@
+$green-background: #daffe7;
+$gray-background: #d3d3d358;
+$yellow-background: #feffdb;
+$red-background: #ffe6e5;
+$blue-background: #b8d9ff;
+
+.deviceStatusRow {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 20px;
+
+    .deviceStatusColumn {
+        display: flex;
+        flex-direction: column;
+        margin: 10px;
+
+        div {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 20px;
+            border-color: black;
+            border-width: 2px;
+            border-style: solid;
+            height: 100px;
+            width: 200px;
+            font-size: 1.3rem;
+            font-weight: bold;
+        }
+
+        .active {
+            background-color: $green-background;
+        }
+
+        .idle {
+            background-color: $yellow-background;
+        }
+
+        .deactivated {
+            background-color: $gray-background;
+        }
+
+        .error {
+            background-color: $red-background;
+        }
+
+        .total {
+            background-color: $blue-background;
+        }
+    }
+}
