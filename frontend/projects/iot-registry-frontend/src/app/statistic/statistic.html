@@ -30,3 +30,19 @@
         </div>
     </div>
 </div>
+
+<div class="field">
+    <label for="device">Device:</label>
+    <mat-form-field appearance="fill">
+        <input type="text" matInput placeholder="Serial number" [formControl]="deviceControl"
+            [matAutocomplete]="auto" />
+        <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayDevice"
+            (optionSelected)="onDeviceSelected($event)">
+            @for (d of filteredDevices | async; track d.id) {
+            <mat-option [value]="d">
+                {{ d.serialNumber }}
+            </mat-option>
+            }
+        </mat-autocomplete>
+    </mat-form-field>
+</div>

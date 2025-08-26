@@ -2,11 +2,34 @@ import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { UserManagerService } from '../user-manager-service';
 import { environment } from '../environments/environment';
+import { MatAutocomplete } from '@angular/material/autocomplete';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { Observable } from 'rxjs';
+import { startWith, map } from 'rxjs/operators';
+import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatInputModule } from '@angular/material/input';
+import { CommonModule } from '@angular/common';
+
+interface Device {
+  id: number;
+  serialNumber: string;
+  model: string;
+  manufacturer?: string;
+  typeId: number;
+  type: string;
+  statusId: number;
+  status: string;
+  firmwareVersion: string;
+  location: number;
+  lastSeen: string;
+}
 
 @Component({
   selector: 'app-statistic',
   standalone: true,
-  imports: [],
+  imports: [MatAutocomplete, MatFormFieldModule, MatAutocompleteModule, MatInputModule, ReactiveFormsModule, CommonModule],
   templateUrl: './statistic.html',
   styleUrl: './statistic.scss'
 })
@@ -21,7 +44,9 @@ export class Statistic implements OnInit {
   deactivatedPercent = 0;
   errorPercent = 0;
   totalPercent = 0;
-  devices: any[] = [];
+  devices: Device[] = [];
+  deviceControl = new FormControl('');
+  filteredDevices!: Observable<Device[]>;
 
   constructor(private http: HttpClient, public userManager: UserManagerService) { }
 
@@ -65,7 +90,14 @@ export class Statistic implements OnInit {
       .subscribe({
         next: (response) => {
           if (response.success) {
-            this.devices = response.data;
+            console.log(response.data);
+            this.devices = response.data as Device[];
+
+            this.filteredDevices = this.deviceControl.valueChanges.pipe(
+              startWith(''),
+              map((value: string | Device | null) => typeof value === 'string' ? value : value?.serialNumber ?? ''),
+              map((serial: string) => serial ? this.filterDevices(serial) : this.devices.slice())
+            );
           } else {
             console.error('Failed to fetch devices:', response.error);
           }
@@ -74,5 +106,21 @@ export class Statistic implements OnInit {
           console.error('Error fetching devices', err);
         }
       });
+  }
+
+  private filterDevices(serial: string): Device[] {
+    const filterValue = serial.toLowerCase();
+    return this.devices.filter(d => d.serialNumber.toLowerCase().includes(filterValue));
+  }
+
+  displayDevice(device: Device): string {
+    return device ? device.serialNumber : '';
+  }
+
+  onDeviceSelected(event: MatAutocompleteSelectedEvent) {
+    const device = event.option.value;
+    console.log('Selected device serial:', device.serialNumber);
+
+
   }
 }
