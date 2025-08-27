@@ -82,6 +82,17 @@ services:
     ports:
       - "5003:8080"
 
+  statistic-service:
+    build: ./statistic-service
+    depends_on:
+      - device-service
+      - event-service
+      - location-service
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+    ports:
+      - "5005:8080"
+
   frontend:
     build: ./frontend
     ports:
@@ -91,6 +102,7 @@ services:
       - device-service
       - event-service
       - location-service
+      - statistic-service
 
 volumes:
   user-db-data:

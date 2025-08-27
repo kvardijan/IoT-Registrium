@@ -1,0 +1,81 @@
+<div class="deviceStatusRow">
+    <div class="deviceStatusColumn">
+        <h2>Active devices</h2>
+        <div class="active">
+            {{active}} / {{activePercent}}%
+        </div>
+    </div>
+    <div class="deviceStatusColumn">
+        <h2>Idle devices</h2>
+        <div class="idle">
+            {{idle}} / {{idlePercent}}%
+        </div>
+    </div>
+    <div class="deviceStatusColumn">
+        <h2>Deactivated devices</h2>
+        <div class="deactivated">
+            {{deactivated}} / {{deactivatedPercent}}%
+        </div>
+    </div>
+    <div class="deviceStatusColumn">
+        <h2>Devices with error</h2>
+        <div class="error">
+            {{error}} / {{errorPercent}}%
+        </div>
+    </div>
+    <div class="deviceStatusColumn">
+        <h2>Total devices</h2>
+        <div class="total">
+            {{total}}
+        </div>
+    </div>
+</div>
+
+<div class="deviceStatisticRow">
+    <div class="field">
+        <label for="device">Device:</label>
+        <mat-form-field appearance="fill">
+            <input type="text" matInput placeholder="Serial number" [formControl]="deviceControl"
+                [matAutocomplete]="auto" />
+            <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayDevice"
+                (optionSelected)="onDeviceSelected($event)">
+                @for (d of filteredDevices | async; track d.id) {
+                <mat-option [value]="d">
+                    {{ d.serialNumber }}
+                </mat-option>
+                }
+            </mat-autocomplete>
+        </mat-form-field>
+    </div>
+
+    @if(showTemperature) {
+    <div>
+        <h3>Temperature Statistics</h3>
+        <div class="temperatureInfoRow">
+            <p class="max">Max: {{ temperatureData?.max }}</p>
+            <p class="min">Min: {{ temperatureData?.min }}</p>
+            <p class="avg">Avg: {{ temperatureData?.avg }}</p>
+        </div>
+    </div>
+    }
+
+    @if(showHumidity) {
+    <div>
+        <h3>Humidity Statistics</h3>
+        <div class="humidityInfoRow">
+            <p class="max">Max: {{ humidityData?.max }}</p>
+            <p class="min">Min: {{ humidityData?.min }}</p>
+            <p class="avg">Avg: {{ humidityData?.avg }}</p>
+        </div>
+    </div>
+    }
+
+    @if(showSmartBin) {
+    <div>
+        <h3>Smart Bin Statistics</h3>
+        <div class="smartBinInfoRow">
+            <p class="capacity">Capacity: {{ smartBinData?.percentageFull }}%</p>
+        </div>
+    </div>
+    }
+</div>
