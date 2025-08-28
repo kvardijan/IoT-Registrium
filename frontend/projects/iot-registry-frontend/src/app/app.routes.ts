@@ -10,6 +10,7 @@ import { DevicesMap } from './devices-map/devices-map';
 import { AddLocation } from './add-location/add-location';
 import { EditLocation } from './edit-location/edit-location';
 import { Statistic } from './statistic/statistic';
+import { Simulation } from './simulation/simulation';
 
 export const routes: Routes = [
     { path: 'devicestable', component: DevicesTable },
@@ -21,6 +22,7 @@ export const routes: Routes = [
     { path: 'devices/:serialNumber/events', component: DeviceEvents, canActivate: [authGuard] },
     { path: 'locations/:locationId', component: EditLocation, canActivate: [authGuard] },
     { path: 'statistic', component: Statistic, canActivate: [authGuard] },
+    { path: 'simulation', component: Simulation, canActivate: [authGuard] },
     { path: '', component: DevicesTable },
     { path: '**', component: NotFound }
 ];
