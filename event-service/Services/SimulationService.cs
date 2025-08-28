@@ -70,7 +70,7 @@ namespace event_service.Services
             var evnt = new Event
             {
                 Device = serialNumber,
-                Type = typeId,
+                Type = 5,
                 Data = JsonSerializer.Serialize(data),
                 Timestamp = DateTime.UtcNow
             };
