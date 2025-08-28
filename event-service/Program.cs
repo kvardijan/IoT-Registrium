@@ -58,6 +58,7 @@ namespace event_service
             builder.Services.AddControllers();
 
             builder.Services.AddScoped<EventService>();
+            builder.Services.AddSingleton<SimulationService>();
 
             var allowedOrigins = builder.Configuration.GetSection("AllowedOrigins").Get<string[]>();
             builder.Services.AddCors(options =>
