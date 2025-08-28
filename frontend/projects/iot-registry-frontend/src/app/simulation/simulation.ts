@@ -13,6 +13,7 @@ import { UserManagerService } from '../user-manager-service';
 })
 export class Simulation implements OnInit, OnDestroy {
   devices: any[] = [];
+  message = '';
 
   constructor(private http: HttpClient, public userManager: UserManagerService) { }
 
@@ -58,24 +59,32 @@ export class Simulation implements OnInit, OnDestroy {
   }
 
   toggleSimulation(device: any) {
-    const jwt = this.userManager.getToken();
-    const headers = {
-      Authorization: 'Bearer ' + jwt
-    };
+    if (device.typeId == 1 || device.typeId == 2 || device.typeId == 4) {
+      const jwt = this.userManager.getToken();
+      const headers = {
+        Authorization: 'Bearer ' + jwt
+      };
 
-    if (device.simulating) {
-      this.http.post(environment.simulationApi + `/stop/${device.serialNumber}`, {}, { headers })
-        .subscribe({
-          next: () => device.simulating = false,
-          error: (err) => console.error('Error stopping simulation', err)
-        });
-    } else {
-      const body = { TypeId: device.typeId };
-      this.http.post(environment.simulationApi + `/start/${device.serialNumber}`, body, { headers })
-        .subscribe({
-          next: () => device.simulating = true,
-          error: (err) => console.error('Error starting simulation', err)
-        });
+      if (device.simulating) {
+        this.http.post(environment.simulationApi + `/stop/${device.serialNumber}`, {}, { headers })
+          .subscribe({
+            next: () => {
+              device.simulating = false;
+              this.message = 'Stopped simulation for device ' + device.serialNumber;
+            },
+            error: (err) => console.error('Error stopping simulation', err)
+          });
+      } else {
+        const body = { TypeId: device.typeId };
+        this.http.post(environment.simulationApi + `/start/${device.serialNumber}`, body, { headers })
+          .subscribe({
+            next: () => {
+              device.simulating = true;
+              this.message = 'Started simulation for device ' + device.serialNumber;
+            },
+            error: (err) => console.error('Error starting simulation', err)
+          });
+      }
     }
   }
 
@@ -87,7 +96,10 @@ export class Simulation implements OnInit, OnDestroy {
 
     this.http.post(environment.simulationApi + '/stop-all', {}, { headers })
       .subscribe({
-        next: () => this.devices.forEach(d => d.simulating = false),
+        next: () => {
+          this.devices.forEach(d => d.simulating = false);
+          this.message = 'Stopped all simulations';
+        },
         error: (err) => console.error('Error stopping all simulations', err)
       });
   }
@@ -104,5 +116,4 @@ export class Simulation implements OnInit, OnDestroy {
       keepalive: true
     }).catch(err => console.error('Failed stopping simulations on unload', err));
   }
-
 }
