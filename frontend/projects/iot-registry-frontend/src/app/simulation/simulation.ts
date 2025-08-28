@@ -7,7 +7,7 @@ import { UserManagerService } from '../user-manager-service';
 @Component({
   selector: 'app-simulation',
   standalone: true,
-  imports: [],
+  imports: [CommonModule],
   templateUrl: './simulation.html',
   styleUrl: './simulation.scss'
 })
@@ -35,4 +35,21 @@ export class Simulation implements OnInit {
         }
       });
   }
+
+    getStatusClass(status: string): string {
+    switch (status.toLowerCase()) {
+      case 'active':
+        return 'green';
+      case 'idle':
+        return 'yellow';
+      case 'deactivated':
+        return 'gray';
+      case 'error':
+        return 'red';
+      default:
+        return '';
+    }
+  }
+
+  onStopAllSimulationsClick(){}
 }

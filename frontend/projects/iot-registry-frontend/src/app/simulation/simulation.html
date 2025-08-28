@@ -1,1 +1,23 @@
-<p>simulation works!</p>
+<div class="table-container">
+    <div id="buttons">
+        <button id="stopAllSimulations" (click)="onStopAllSimulationsClick()">Stop all simulations</button>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>Serial number</th>
+                <th>Simulation control</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (device of devices; track device) {
+            <tr [ngClass]="getStatusClass(device.status)">
+                <td>{{ device.serialNumber }}</td>
+                <td>
+                    <button>START</button>
+                </td>
+            </tr>
+            }
+        </tbody>
+    </table>
+</div>
