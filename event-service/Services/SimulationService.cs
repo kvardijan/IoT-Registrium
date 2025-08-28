@@ -5,14 +5,15 @@ using Timer = System.Timers.Timer;
 
 namespace event_service.Services
 {
+
     public class SimulationService
     {
-        private readonly EventsDbContext _context;
+        private readonly IServiceScopeFactory _scopeFactory;
         private readonly Dictionary<string, Timer> _activeSimulations = new();
 
-        public SimulationService(EventsDbContext context)
+        public SimulationService(IServiceScopeFactory scopeFactory)
         {
-            _context = context;
+            _scopeFactory = scopeFactory;
         }
 
         public bool StartSimulation(string serialNumber, int typeId)
@@ -31,14 +32,14 @@ namespace event_service.Services
 
         public bool StopSimulation(string serialNumber)
         {
-            if (!_activeSimulations.TryGetValue(serialNumber, out var timer))
-                return false;
-
-            timer.Stop();
-            timer.Dispose();
-            _activeSimulations.Remove(serialNumber);
-
-            return true;
+            if (_activeSimulations.TryGetValue(serialNumber, out var timer))
+            {
+                timer.Stop();
+                timer.Dispose();
+                _activeSimulations.Remove(serialNumber);
+                return true;
+            }
+            return false;
         }
 
         public void StopAllSimulations()
@@ -53,6 +54,9 @@ namespace event_service.Services
 
         private void GenerateMockEvent(string serialNumber, int typeId)
         {
+            using var scope = _scopeFactory.CreateScope();
+            var context = scope.ServiceProvider.GetRequiredService<EventsDbContext>();
+
             var recordedData = typeId switch
             {
                 1 => new Dictionary<string, string> { { "temperature", $"{Random.Shared.Next(20, 40)}C" } },
@@ -71,8 +75,9 @@ namespace event_service.Services
                 Timestamp = DateTime.UtcNow
             };
 
-            _context.Events.Add(evnt);
-            _context.SaveChanges();
+            context.Events.Add(evnt);
+            context.SaveChanges();
         }
     }
+
 }
