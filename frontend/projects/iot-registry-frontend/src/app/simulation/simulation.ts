@@ -93,6 +93,16 @@ export class Simulation implements OnInit, OnDestroy {
   }
 
   private stopAllSimulationsSilent() {
-    navigator.sendBeacon(environment.simulationApi + '/stop-all');
+    const jwt = this.userManager.getToken();
+    fetch(environment.simulationApi + '/stop-all', {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer ' + jwt,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({}),
+      keepalive: true
+    }).catch(err => console.error('Failed stopping simulations on unload', err));
   }
+
 }
