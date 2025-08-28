@@ -59,32 +59,38 @@ export class Simulation implements OnInit, OnDestroy {
   }
 
   toggleSimulation(device: any) {
-    if (device.typeId == 1 || device.typeId == 2 || device.typeId == 4) {
-      const jwt = this.userManager.getToken();
-      const headers = {
-        Authorization: 'Bearer ' + jwt
-      };
+    if (device.statusId == 1) {
+      if (device.typeId == 1 || device.typeId == 2 || device.typeId == 4) {
+        const jwt = this.userManager.getToken();
+        const headers = {
+          Authorization: 'Bearer ' + jwt
+        };
 
-      if (device.simulating) {
-        this.http.post(environment.simulationApi + `/stop/${device.serialNumber}`, {}, { headers })
-          .subscribe({
-            next: () => {
-              device.simulating = false;
-              this.message = 'Stopped simulation for device ' + device.serialNumber;
-            },
-            error: (err) => console.error('Error stopping simulation', err)
-          });
+        if (device.simulating) {
+          this.http.post(environment.simulationApi + `/stop/${device.serialNumber}`, {}, { headers })
+            .subscribe({
+              next: () => {
+                device.simulating = false;
+                this.message = 'Stopped simulation for device ' + device.serialNumber;
+              },
+              error: (err) => console.error('Error stopping simulation', err)
+            });
+        } else {
+          const body = { TypeId: device.typeId };
+          this.http.post(environment.simulationApi + `/start/${device.serialNumber}`, body, { headers })
+            .subscribe({
+              next: () => {
+                device.simulating = true;
+                this.message = 'Started simulation for device ' + device.serialNumber;
+              },
+              error: (err) => console.error('Error starting simulation', err)
+            });
+        }
       } else {
-        const body = { TypeId: device.typeId };
-        this.http.post(environment.simulationApi + `/start/${device.serialNumber}`, body, { headers })
-          .subscribe({
-            next: () => {
-              device.simulating = true;
-              this.message = 'Started simulation for device ' + device.serialNumber;
-            },
-            error: (err) => console.error('Error starting simulation', err)
-          });
+        this.message = 'Simulation for this device type is not supported';
       }
+    } else {
+      this.message = 'Simulations can only be ran for active devices';
     }
   }
 
