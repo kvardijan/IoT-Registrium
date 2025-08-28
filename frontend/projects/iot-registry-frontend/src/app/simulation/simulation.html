@@ -14,7 +14,9 @@
             <tr [ngClass]="getStatusClass(device.status)">
                 <td>{{ device.serialNumber }}</td>
                 <td>
-                    <button>START</button>
+                    <button [ngClass]="{ 'red': device.simulating }" (click)="toggleSimulation(device)">
+                        {{ device.simulating ? 'STOP' : 'START' }}
+                    </button>
                 </td>
             </tr>
             }

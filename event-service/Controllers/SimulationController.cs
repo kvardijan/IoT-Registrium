@@ -19,9 +19,9 @@ namespace event_service.Controllers
 
         [Authorize]
         [HttpPost("start/{serialNumber}")]
-        public IActionResult StartSimulation(string serialNumber, int typeId)
+        public IActionResult StartSimulation(string serialNumber, [FromBody] SimulationStartRequestDto dto)
         {
-            var started = _simulationService.StartSimulation(serialNumber, typeId);
+            var started = _simulationService.StartSimulation(serialNumber, dto.TypeId);
             return Ok(ApiResponse<bool>.Ok(started));
         }
 
