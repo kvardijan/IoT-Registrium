@@ -42,6 +42,10 @@ table {
             &:hover {
                 background-color: #4870b0a0;
             }
+
+            &.red {
+                background-color: red;
+            }
         }
     }
 
