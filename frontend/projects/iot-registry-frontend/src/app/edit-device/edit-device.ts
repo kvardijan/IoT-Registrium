@@ -147,7 +147,7 @@ export class EditDevice implements OnInit {
       body.location = this.location;
     }
 
-    this.http.patch<{ success: boolean; data: string; error: string }>(environment.deviceApi + this.id, body, { headers })
+    this.http.patch<{ success: boolean; data: string; error: string }>(environment.deviceApi + '/' + this.id, body, { headers })
       .subscribe({
         next: (response) => {
           if (response.success) {
